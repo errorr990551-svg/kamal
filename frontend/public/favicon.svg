@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Radial Gradient for Background -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#cc0d1a" />
+      <stop offset="100%" stop-color="#7a040b" />
+    </radialGradient>
+    
+    <!-- Gold Gradient for Lotus -->
+    <linearGradient id="lotusGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+  </defs>
+
+  <!-- Deep Red Rounded Background -->
+  <rect width="128" height="128" rx="32" fill="url(#bgGrad)" />
+  <rect x="3" y="3" width="122" height="122" rx="29" fill="none" stroke="#fde047" stroke-width="3" stroke-opacity="0.6" />
+
+  <!-- Gold Lotus Emblem -->
+  <g transform="translate(14, 14)">
+    <!-- Outer Petals -->
+    <path d="M50 15 C55 35 75 45 85 60 C65 65 55 60 50 75 C45 60 35 65 15 60 C25 45 45 35 50 15 Z" fill="url(#lotusGold)" stroke="#fef08a" stroke-width="2" />
+    
+    <!-- Middle Petals -->
+    <path d="M50 28 C55 42 68 50 75 62 C60 65 54 62 50 73 C46 62 40 65 25 62 C32 50 45 42 50 28 Z" fill="#fde047" fill-opacity="0.75" stroke="#fef08a" stroke-width="1.5" />
+    
+    <!-- Inner Core -->
+    <path d="M50 40 C53 48 60 54 65 64 C55 66 52 64 50 70 C48 64 45 66 35 64 C40 54 47 48 50 40 Z" fill="#fef08a" />
+  </g>
+</svg>
