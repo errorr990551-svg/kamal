@@ -82,7 +82,7 @@ export default function HomePage({ setActiveTab, searchQuery }) {
       id: 'bhujiya',
       name: 'Bhujiya',
       tag: 'Classic Namkeen',
-      images: ['/BHUJIYA.webp'],
+      images: ['/BHUJIYA.webp', '/bhujia1.webp', '/bhujia2.webp'],
     },
     {
       id: 'chana-dal',
@@ -118,7 +118,7 @@ export default function HomePage({ setActiveTab, searchQuery }) {
       id: 'mitha-chanachur',
       name: 'Mitha Chanachur',
       tag: 'Sweet & Tangy',
-      images: ['/Mitha Chanachur.webp'],
+      images: ['/Mitha Chanachur.webp', '/Mitha Chanachur1.webp', '/Mitha Chanachur2.webp'],
     },
     {
       id: 'papdighatia',
@@ -147,7 +147,7 @@ export default function HomePage({ setActiveTab, searchQuery }) {
   return (
     <div className="space-y-10 animate-fadeIn pb-8">
       
-      {/* HERO SECTION: Full-margin touch karke with kamal banner.webp (Matching Image 3) */}
+      {/* HERO SECTION: Left margin se sata ke, text clear and balanced */}
       <section className="w-full relative overflow-hidden bg-red-950 shadow-2xl border-b-4 border-amber-500/60">
         <div className="relative w-full hero-banner-frame flex items-center">
           
@@ -159,10 +159,10 @@ export default function HomePage({ setActiveTab, searchQuery }) {
           />
 
           {/* Left subtle gradient overlay to ensure text readability while letting right side packets pop */}
-          <div className="absolute inset-0 bg-linear-to-r from-red-950/90 via-red-950/65 to-transparent w-full md:w-3/5 lg:w-1/2 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-r from-red-950/95 via-red-950/70 to-transparent w-full md:w-3/5 lg:w-1/2 pointer-events-none" />
 
-          {/* Left Content Overlay: Exact text & buttons specified in prompt */}
-          <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 w-full py-12 md:py-16">
+          {/* Left Content Overlay: Shifted closer to the left margin */}
+          <div className="relative z-10 w-full px-6 sm:px-10 md:px-14 lg:px-16 py-12 md:py-16">
             <div className="max-w-xl text-left space-y-6">
               
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-bold uppercase tracking-wider backdrop-blur-xs">
@@ -177,17 +177,32 @@ export default function HomePage({ setActiveTab, searchQuery }) {
                 </span>
               </h1>
 
-              {/* Two Buttons: Explore Products & Apply For Dealership */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              {/* Action Buttons: Order In Bulk Now, Explore Products & Apply For Dealership */}
+              <div className="flex flex-wrap items-center gap-3.5 sm:gap-4 pt-2">
                 <button
-                  onClick={() => setActiveTab('products')}
-                  className="px-7 py-3 rounded-full bg-amber-400 hover:bg-amber-300 text-red-950 font-extrabold text-sm sm:text-base shadow-xl hover:shadow-amber-400/30 transition-all flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer"
+                  onClick={() => {
+                    setActiveTab('dealership');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="px-7 py-3 rounded-full bg-amber-400 hover:bg-amber-300 text-red-950 font-extrabold text-sm sm:text-base shadow-xl hover:shadow-amber-400/30 transition-all flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer uppercase tracking-wide"
                 >
-                  Explore Products <ArrowRight size={18} />
+                  Order In Bulk Now <ArrowRight size={18} />
                 </button>
                 <button
-                  onClick={() => setActiveTab('dealership')}
-                  className="px-7 py-3 rounded-full bg-red-900/80 hover:bg-red-800 text-amber-100 font-extrabold text-sm sm:text-base border-2 border-amber-400/60 shadow-xl hover:shadow-red-900/40 transition-all transform hover:-translate-y-0.5 cursor-pointer backdrop-blur-xs"
+                  onClick={() => {
+                    setActiveTab('products');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="px-7 py-3 rounded-full bg-red-900/80 hover:bg-red-800 text-amber-100 font-extrabold text-sm sm:text-base border-2 border-amber-400/60 shadow-xl hover:shadow-red-900/40 transition-all transform hover:-translate-y-0.5 cursor-pointer backdrop-blur-xs flex items-center gap-2"
+                >
+                  Explore Products
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('dealership');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="px-6 py-3 rounded-full bg-black/40 hover:bg-black/60 text-stone-200 hover:text-white font-bold text-sm sm:text-base border border-amber-300/30 transition-all cursor-pointer backdrop-blur-xs"
                 >
                   Apply For Dealership
                 </button>
@@ -202,9 +217,24 @@ export default function HomePage({ setActiveTab, searchQuery }) {
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 space-y-12">
 
-        {/* YOUR FAVOURITE ITEMS (Matching Image 4 with real pictures & auto-slide) */}
-        <section className="bg-white/95 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl border-2 border-amber-500/40 space-y-6">
-          <div className="text-center space-y-2">
+        {/* YOUR FAVOURITE ITEMS (Matching Image 2 with top-right View All button) */}
+        <section className="bg-white/95 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl border-2 border-amber-500/40 space-y-6 relative">
+          <div className="relative flex flex-col items-center justify-center text-center space-y-2">
+            
+            {/* Top Right "View All ->" Button matching Image 2 */}
+            <div className="w-full flex justify-end sm:absolute sm:right-0 sm:top-0 sm:w-auto mb-2 sm:mb-0">
+              <button
+                onClick={() => {
+                  setActiveTab('products');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-linear-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-red-950 hover:text-white font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:-translate-y-0.5 border border-amber-600/30 group"
+              >
+                <span>View All</span>
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+
             <h2 className="font-serif-brand text-2xl sm:text-3xl md:text-4xl font-extrabold text-stone-900 flex items-center justify-center gap-3">
               <Utensils className="text-red-800" size={32} />
               YOUR FAVOURITE ITEMS

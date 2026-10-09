@@ -160,7 +160,7 @@ export default function ProductsPage({ searchQuery, setSearchQuery, showToast, s
       desc: 'A delightful blend of premium chana besan, crispy maize chips, and crunchy peanuts, coated with a hint of sweetness and a balanced mix of spices. Prepared in high-quality edible oil, this mitha chanachur offers a unique fusion of sweet and savory flavors with a satisfying crunch in every bite.',
       weight: 'Available in 400gm , 200gm packets.',
       slogan: '“Meetha Bhi, Crunchy Bhi”',
-      images: ['/Mitha Chanachur.webp'],
+      images: ['/Mitha Chanachur1.webp', '/Mitha Chanachur2.webp', '/Mitha Chanachur.webp'],
     },
     {
       id: 'bhujia',
@@ -169,7 +169,7 @@ export default function ProductsPage({ searchQuery, setSearchQuery, showToast, s
       desc: 'Made from premium quality besan and seasoned with a perfect blend of spices, our bhujia delivers a crispy texture with a mildly spicy taste that delights every palate. Fried in high-quality edible oil, each strand offers freshness, rich flavor, and a satisfying crunch.',
       weight: 'Available in 380gm , 180gm packets.',
       slogan: '“Halka Teekha, Full Maza”',
-      images: ['/BHUJIYA.webp'],
+      images: ['/bhujia1.webp', '/bhujia2.webp', '/BHUJIYA.webp'],
     },
     {
       id: 'sew',

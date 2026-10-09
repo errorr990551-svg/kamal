@@ -8,9 +8,12 @@ export default function Footer({ setActiveTab }) {
       {/* Background Floral Overlay */}
       <div className="absolute inset-0 bg-kamal-pattern opacity-30 pointer-events-none" />
 
-      {/* Official Contact & Dhanyavad Card matching Image 5 */}
+      {/* Official Contact & Dhanyavad Card matching Image 3 */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 mb-10">
-        <ContactBanner />
+        <ContactBanner onOrderBulk={() => {
+          setActiveTab('dealership');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
