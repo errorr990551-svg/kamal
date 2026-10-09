@@ -20,7 +20,12 @@ export default function Footer({ setActiveTab }) {
         
         {/* Brand Column */}
         <div className="space-y-4 md:col-span-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/kamal logo.webp" 
+              alt="Kamal Brand Logo" 
+              className="h-9 w-auto object-contain filter drop-shadow-sm"
+            />
             <h3 className="font-serif-brand text-2xl font-bold text-amber-200 tracking-wide">
               Kamal Brand
             </h3>

@@ -91,14 +91,13 @@ export default function ContactBanner({ onOrderBulk, className = "" }) {
 
         </div>
 
-        {/* Authentic Namaste Folded Hands & Dhanyavad Section */}
-        <div className="mt-10 sm:mt-14 flex flex-col items-center justify-center space-y-2">
-          {/* Authentic Namaste Hands from Kamal Brand PDF */}
-          <div className="relative transform hover:scale-110 transition-transform">
+        {/* Kamal Brand Lotus Emblem & Dhanyavad Section */}
+        <div className="mt-10 sm:mt-14 flex flex-col items-center justify-center space-y-3">
+          <div className="relative transform hover:scale-105 transition-transform">
             <img 
-              src="/namaste.png" 
-              alt="Dhanyavad Namaste" 
-              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain filter drop-shadow-md select-none"
+              src="/kamal logo.webp" 
+              alt="Kamal Brand Logo" 
+              className="h-16 sm:h-20 md:h-24 w-auto object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)] select-none"
             />
           </div>
 
