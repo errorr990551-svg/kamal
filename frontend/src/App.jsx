@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BrandHeader from './components/BrandHeader';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Toast from './components/Toast';
@@ -34,7 +35,7 @@ export default function App() {
       case 'dealership':
         return <DealershipPage showToast={showToast} />;
       case 'products':
-        return <ProductsPage searchQuery={searchQuery} setSearchQuery={setSearchQuery} showToast={showToast} />;
+        return <ProductsPage searchQuery={searchQuery} setSearchQuery={setSearchQuery} showToast={showToast} setActiveTab={setActiveTab} />;
       case 'about':
         return <AboutPage />;
       case 'hampers':
@@ -47,9 +48,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-kamal-subtle-pattern text-stone-800 flex flex-col justify-between selection:bg-red-800 selection:text-amber-100">
+    <div className="min-h-screen bg-kamal-website-bg text-stone-800 flex flex-col justify-between selection:bg-red-800 selection:text-amber-100">
       <div>
-        {/* Navigation Bar */}
+        {/* Top Kamal Brand Header Banner */}
+        <BrandHeader subtitle="savour the authentic flavors in every bite" />
+
+        {/* Navigation Bar shifted below Kamal Brand banner & above second section */}
         <Navbar 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import BrandHeader from '../components/BrandHeader';
 import ImagePlaceholder from '../components/ImagePlaceholder';
 import { Gift, PackageCheck, Sparkles, Plus, Check, Send } from 'lucide-react';
 
@@ -44,9 +43,6 @@ export default function HampersPage({ showToast }) {
 
   return (
     <div className="space-y-10 animate-fadeIn pb-8">
-      {/* Brand Header Banner (Matching Image 2 pencil wireframe top header note "Kamal Brand Same Here") */}
-      <BrandHeader subtitle="Gifting & Custom Celebration Hampers" />
-
       <div className="max-w-7xl mx-auto px-4 space-y-12">
 
         {/* Section Title */}

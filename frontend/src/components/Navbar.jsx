@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Menu, X, Sparkles, Building2, Package, Info, Gift, Factory, Home } from 'lucide-react';
+import { Search, Menu, X, Building2, Package, Info, Gift, Factory, Home } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, searchQuery, setSearchQuery }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

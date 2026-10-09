@@ -21,23 +21,13 @@ export default function BrandHeader({ subtitle = "savour the authentic flavors i
             Kamal
           </h1>
 
-          {/* Lotus Emblem (Matching Image 3) */}
-          <div className="relative flex items-center justify-center my-1">
-            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-amber-400/20 border border-amber-300/50 flex items-center justify-center shadow-inner backdrop-blur-xs p-1">
-              <svg className="w-10 h-10 md:w-12 md:h-12 text-amber-300 drop-shadow" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-                {/* Lotus Petals Drawing */}
-                <path d="M50 15 C55 35 75 45 85 60 C65 65 55 60 50 75 C45 60 35 65 15 60 C25 45 45 35 50 15 Z" fill="url(#goldGrad)" stroke="#fef08a" strokeWidth="2.5" />
-                <path d="M50 28 C55 42 68 50 75 62 C60 65 54 62 50 73 C46 62 40 65 25 62 C32 50 45 42 50 28 Z" fill="#fde047" fillOpacity="0.5" stroke="#fef08a" strokeWidth="1.5" />
-                <path d="M50 40 C53 48 60 54 65 64 C55 66 52 64 50 70 C48 64 45 66 35 64 C40 54 47 48 50 40 Z" fill="#fef08a" fillOpacity="0.8" />
-                <defs>
-                  <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#fef08a" />
-                    <stop offset="50%" stopColor="#eab308" />
-                    <stop offset="100%" stopColor="#ca8a04" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
+          {/* Lotus Emblem: Using frontend/public/kamal logo.webp */}
+          <div className="relative flex items-center justify-center my-1 px-1 sm:px-2">
+            <img 
+              src="/kamal logo.webp" 
+              alt="Kamal Brand Logo" 
+              className="h-12 sm:h-16 md:h-20 w-auto object-contain filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform"
+            />
           </div>
 
           {/* Brand Name Right */}

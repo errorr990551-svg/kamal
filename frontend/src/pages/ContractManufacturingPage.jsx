@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import BrandHeader from '../components/BrandHeader';
-import { Factory, Send, ShieldCheck, Calendar, PhoneCall, Sparkles } from 'lucide-react';
+import { Factory, Send, ShieldCheck, PhoneCall, Sparkles } from 'lucide-react';
 
 export default function ContractManufacturingPage({ showToast }) {
   const [formData, setFormData] = useState({
@@ -38,9 +37,6 @@ export default function ContractManufacturingPage({ showToast }) {
 
   return (
     <div className="space-y-10 animate-fadeIn pb-8">
-      {/* Brand Header Banner (Matching Image 2 pencil wireframe top header note "Kamal Brand Same Here") */}
-      <BrandHeader subtitle="Third-Party Processing & Contract Manufacturing" />
-
       <div className="max-w-7xl mx-auto px-4 space-y-10">
 
         {/* Section Header */}

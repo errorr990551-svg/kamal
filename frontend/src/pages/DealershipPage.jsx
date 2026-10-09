@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import BrandHeader from '../components/BrandHeader';
-import { ShieldCheck, CheckCircle2, Award, Building2, Send, PhoneCall, Sparkles } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Building2, Send, PhoneCall, Sparkles } from 'lucide-react';
 
 export default function DealershipPage({ showToast }) {
   const [formData, setFormData] = useState({
@@ -44,9 +43,6 @@ export default function DealershipPage({ showToast }) {
 
   return (
     <div className="space-y-10 animate-fadeIn pb-8">
-      {/* Page Brand Header Banner */}
-      <BrandHeader subtitle="Join hands with Kamal Brand - Expand Your Business" />
-
       <div className="max-w-7xl mx-auto px-4 space-y-10">
 
         {/* Section Header */}

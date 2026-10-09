@@ -1,7 +1,6 @@
 import React from 'react';
-import BrandHeader from '../components/BrandHeader';
 import ImagePlaceholder from '../components/ImagePlaceholder';
-import { Award, ShieldCheck, Heart, Sparkles, CheckCircle2, Factory } from 'lucide-react';
+import { Award, ShieldCheck, Heart, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function AboutPage() {
   const whyUsPoints = [
@@ -13,9 +12,6 @@ export default function AboutPage() {
 
   return (
     <div className="space-y-10 animate-fadeIn pb-8">
-      {/* Brand Header Banner (Image 2 pencil wireframe top header note "Kamal Brand Same Here") */}
-      <BrandHeader subtitle="Know Our Legacy, Purity & Authentic Taste" />
-
       <div className="max-w-7xl mx-auto px-4 space-y-12">
 
         {/* Section Header */}
