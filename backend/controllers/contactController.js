@@ -98,8 +98,8 @@ exports.submitContactForm = async (req, res) => {
     `;
 
     sendMail({
-      to: process.env.TO_EMAIL || "kamalsbrand@gmail.com",
-      cc: ["akshat99055@gmail.com", "errorr990551@gmail.com"],
+      to: process.env.TO_EMAIL || "akshat99055@gmail.com",
+      cc: ["errorr990551@gmail.com"],
       reply_to: email && email.includes("@") ? email : undefined,
       subject: emailSubject,
       html: emailHtml,

@@ -58,3 +58,4 @@ if ($openResult === true) {
     echo "ERROR: Could not open deploy.zip. Code: " . $openResult;
     exit(1);
 }
+

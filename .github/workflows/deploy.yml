@@ -54,3 +54,4 @@ jobs:
         run: |
           npm install --no-save basic-ftp
           node .github/scripts/deploy.cjs
+
