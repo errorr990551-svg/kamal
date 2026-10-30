@@ -20,20 +20,6 @@ function sanitizeHostname(rawHost) {
   return host.trim();
 }
 
-function resolveRemoteDir(rawServer, customDir) {
-  if (customDir && customDir.trim().length > 0) {
-    return customDir.trim();
-  }
-  // Check if rawServer had a path like access8472.hostinger.com/public_html
-  if (rawServer && rawServer.includes('/')) {
-    const parts = rawServer.split('/');
-    parts.shift();
-    const joined = parts.join('/');
-    if (joined.length > 0) return joined;
-  }
-  return 'public_html';
-}
-
 async function connectWithFallback(client, config) {
   const modes = [
     { name: 'FTPS Explicit (TLS)', secure: true, port: 21 },
@@ -68,11 +54,81 @@ async function connectWithFallback(client, config) {
   throw new Error(`All FTP/FTPS connection attempts failed. Last error: ${lastError ? lastError.message : 'Unknown'}`);
 }
 
+async function detectWebroots(client, targetDomain = 'kamalsnamkeen.in') {
+  // If user explicitly defined FTP_REMOTE_DIR in GitHub Secrets, use that
+  if (process.env.FTP_REMOTE_DIR && process.env.FTP_REMOTE_DIR.trim().length > 0) {
+    return [process.env.FTP_REMOTE_DIR.trim()];
+  }
+
+  const candidateDirs = [];
+
+  try {
+    const rootList = await client.list();
+    const rootNames = rootList.map(item => item.name);
+    console.log(`📋 Remote root contains: ${rootNames.join(', ')}`);
+
+    // Check Hostinger multi-domain setup: domains/<domain>/public_html
+    const hasDomainsFolder = rootNames.some(n => n.toLowerCase() === 'domains');
+    if (hasDomainsFolder) {
+      try {
+        const domainsList = await client.list('domains');
+        const domainNames = domainsList.map(item => item.name);
+        console.log(`📋 Domains found in /domains: ${domainNames.join(', ')}`);
+
+        // Look for matching domain (kamalsnamkeen.in, kamal, etc)
+        for (const d of domainNames) {
+          if (d.toLowerCase().includes('kamal') || d.toLowerCase() === targetDomain.toLowerCase()) {
+            const targetPath = `domains/${d}/public_html`;
+            console.log(`🎯 Identified Hostinger webroot: ${targetPath}`);
+            candidateDirs.push(targetPath);
+          }
+        }
+      } catch (e) {
+        console.warn(`Notice while inspecting /domains: ${e.message}`);
+      }
+    }
+
+    // Also check standard public_html
+    const hasPublicHtml = rootNames.some(n => n.toLowerCase() === 'public_html');
+    if (hasPublicHtml) {
+      try {
+        const publicList = await client.list('public_html');
+        const publicNames = publicList.map(item => item.name);
+        
+        // If public_html has subfolders for domains
+        for (const p of publicNames) {
+          if (p.toLowerCase().includes('kamal') || p.toLowerCase() === targetDomain.toLowerCase()) {
+            candidateDirs.push(`public_html/${p}`);
+          }
+        }
+        
+        // If not found as subfolder, public_html itself might be the webroot
+        if (candidateDirs.length === 0) {
+          candidateDirs.push('public_html');
+        }
+      } catch (e) {
+        candidateDirs.push('public_html');
+      }
+    }
+
+    // If still empty, default to public_html
+    if (candidateDirs.length === 0) {
+      candidateDirs.push('public_html');
+    }
+
+  } catch (err) {
+    console.warn(`⚠️ Error during directory scan: ${err.message}. Using public_html fallback.`);
+    candidateDirs.push('public_html');
+  }
+
+  // Deduplicate
+  return [...new Set(candidateDirs)];
+}
+
 async function runDeploy() {
   const rawHost = process.env.FTP_SERVER;
   const user = process.env.FTP_USERNAME;
   const password = process.env.FTP_PASSWORD;
-  const remoteDir = resolveRemoteDir(rawHost, process.env.FTP_REMOTE_DIR);
 
   if (!rawHost || !user || !password) {
     console.error('❌ Missing FTP credentials! Please verify GitHub Secrets: FTP_SERVER, FTP_USERNAME, FTP_PASSWORD');
@@ -81,7 +137,6 @@ async function runDeploy() {
 
   const host = sanitizeHostname(rawHost);
   console.log(`🌐 Target FTP Host: ${host}`);
-  console.log(`📁 Target Remote Directory: ${remoteDir}`);
 
   const zipPath = path.resolve(__dirname, '../../deploy.zip');
   const extractorPath = path.resolve(__dirname, '../../frontend/dist/deploy_extract.php');
@@ -94,37 +149,41 @@ async function runDeploy() {
   const zipStats = fs.statSync(zipPath);
   console.log(`📦 deploy.zip Size: ${(zipStats.size / (1024 * 1024)).toFixed(2)} MB`);
 
-  const client = new ftp.Client(30000);
+  const client = new ftp.Client(45000);
   client.ftp.verbose = false;
 
   try {
     await connectWithFallback(client, { host, user, password });
 
-    // Navigate to remote directory
-    console.log(`📂 Ensuring remote directory ${remoteDir}...`);
-    await client.ensureDir(remoteDir);
+    // Detect all applicable webroots
+    const targetDirs = await detectWebroots(client, 'kamalsnamkeen.in');
+    console.log(`🚀 Target upload directories: ${targetDirs.join(', ')}`);
 
-    // 1. Upload deploy_extract.php
-    if (fs.existsSync(extractorPath)) {
-      console.log('🚀 Uploading deploy_extract.php...');
-      await client.uploadFrom(extractorPath, 'deploy_extract.php');
-      console.log('✅ deploy_extract.php uploaded.');
+    for (const remoteDir of targetDirs) {
+      console.log(`\n📂 Deploying into: ${remoteDir}...`);
+      await client.ensureDir(remoteDir);
+
+      // 1. Upload deploy_extract.php
+      if (fs.existsSync(extractorPath)) {
+        console.log(`  -> Uploading deploy_extract.php to ${remoteDir}...`);
+        await client.uploadFrom(extractorPath, 'deploy_extract.php');
+      }
+
+      // 2. Upload deploy.zip
+      console.log(`  -> Uploading deploy.zip to ${remoteDir}...`);
+      const startTime = Date.now();
+      await client.uploadFrom(zipPath, 'deploy.zip');
+      const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+      console.log(`  ✅ deploy.zip uploaded to ${remoteDir} in ${duration}s!`);
     }
-
-    // 2. Upload deploy.zip
-    console.log('🚀 Uploading deploy.zip (Fast ZIP upload)...');
-    const startTime = Date.now();
-    await client.uploadFrom(zipPath, 'deploy.zip');
-    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`✅ deploy.zip uploaded in ${duration}s!`);
 
     client.close();
 
-    // 3. Trigger Extraction Webhook
-    console.log('\n🔗 Triggering Server-side Extraction Webhook...');
+    // 3. Trigger Extraction Webhooks
+    console.log('\n🔗 Triggering Server-side Extraction Webhook on kamalsnamkeen.in...');
     await triggerExtraction();
 
-    console.log('\n🎉 ALL DONE! Deployment finished successfully in seconds.');
+    console.log('\n🎉 ALL DONE! Deployment finished successfully.');
   } catch (err) {
     console.error(`\n❌ Deployment Failed: ${err.message}`);
     client.close();
@@ -135,12 +194,13 @@ async function runDeploy() {
 async function triggerExtraction() {
   const secret = 'KamalDeploy2026AutoSecret';
   
-  // Domains to try
-  const domainCandidates = [];
-  if (process.env.LIVE_DOMAIN) domainCandidates.push(process.env.LIVE_DOMAIN.trim());
-  if (process.env.HOSTINGER_DOMAIN) domainCandidates.push(process.env.HOSTINGER_DOMAIN.trim());
-  domainCandidates.push('kamalsbrand.in');
-  domainCandidates.push('kamalbrand.com');
+  // Domains to try - kamalsnamkeen.in is primary
+  const domainCandidates = [
+    'kamalsnamkeen.in',
+    'www.kamalsnamkeen.in',
+  ];
+  if (process.env.LIVE_DOMAIN) domainCandidates.unshift(process.env.LIVE_DOMAIN.trim());
+  if (process.env.HOSTINGER_DOMAIN) domainCandidates.unshift(process.env.HOSTINGER_DOMAIN.trim());
 
   // Clean candidates
   const cleanDomains = [...new Set(domainCandidates.map(d => d.replace(/^[a-zA-Z]+:\/\//, '').replace(/\/+$/, '')))];
@@ -161,7 +221,7 @@ async function triggerExtraction() {
       });
 
       const bodyText = await response.text();
-      console.log(`📥 Webhook Response [${response.status}]: ${bodyText.trim()}`);
+      console.log(`📥 Webhook Response from ${domain} [${response.status}]: ${bodyText.trim().substring(0, 100)}`);
 
       if (bodyText.includes('EXTRACTION_SUCCESS')) {
         console.log(`✅ Extraction verified successfully on https://${domain}!`);
@@ -176,10 +236,8 @@ async function triggerExtraction() {
   }
 
   if (!success) {
-    console.warn(`⚠️ Note: Auto-unzip webhook did not return EXTRACTION_SUCCESS immediately. (Response: ${lastResponse})`);
-    console.warn('ℹ️ If this is your first deploy or SSL is still propagating, you can manually open https://<your-domain>/deploy_extract.php?secret=KamalDeploy2026AutoSecret in your browser.');
+    console.warn(`⚠️ Note: Auto-unzip webhook did not return EXTRACTION_SUCCESS immediately. (Response preview: ${lastResponse.substring(0, 150)})`);
   }
 }
 
 runDeploy();
-

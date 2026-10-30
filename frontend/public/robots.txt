@@ -9,6 +9,4 @@ Disallow: /deploy_extract.php
 Disallow: /deploy.zip
 
 # Sitemaps for Googlebot and search indexers
-Sitemap: https://kamalsbrand.in/sitemap.xml
-Sitemap: https://kamalbrand.com/sitemap.xml
-
+Sitemap: https://kamalsnamkeen.in/sitemap.xml
