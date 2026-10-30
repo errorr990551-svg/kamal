@@ -216,10 +216,10 @@ export default {
           </div>
         `;
 
-        // Configure Recipients
-        const toEmail = env?.TO_EMAIL || "akshat99055@gmail.com";
-        const ccEmail = env?.CC_EMAIL || "errorr990551@gmail.com";
-        const fromEmail = env?.FROM_EMAIL || "Kamal Brand <onboarding@resend.dev>";
+        // Configure Recipients - Direct hardcoded emails without env dependencies
+        const toEmail = "akshat99055@gmail.com";
+        const ccEmail = "errorr990551@gmail.com";
+        const fromEmail = "Kamal Brand <no-reply@inquiry.errorr.in>";
 
         // Send Email via Resend API (Direct REST call compatible with Cloudflare Workers)
         const sendEmail = async (sender) => {
@@ -232,7 +232,7 @@ export default {
             body: JSON.stringify({
               from: sender,
               to: [toEmail],
-              cc: ccEmail && ccEmail !== toEmail ? [ccEmail] : ["errorr990551@gmail.com"],
+              cc: [ccEmail],
               reply_to: email && email.includes("@") ? email : undefined,
               subject: emailSubject,
               html: emailHtml,

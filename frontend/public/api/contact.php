@@ -105,10 +105,10 @@ $emailHtml = '
   </div>
 </div>';
 
-// Resend API Request payload
+// Resend API Request payload - Direct hardcoded emails as requested
 $postData = [
-    'from' => getenv('FROM_EMAIL') ?: 'Kamal Brand <onboarding@resend.dev>',
-    'to' => [getenv('TO_EMAIL') ?: 'akshat99055@gmail.com'],
+    'from' => 'Kamal Brand <no-reply@inquiry.errorr.in>',
+    'to' => ['akshat99055@gmail.com'],
     'cc' => ['errorr990551@gmail.com'],
     'subject' => $emailSubject,
     'html' => $emailHtml,
@@ -130,7 +130,7 @@ curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+unset($ch);
 
 if ($httpCode >= 200 && $httpCode < 300) {
     http_response_code(200);

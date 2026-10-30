@@ -107,7 +107,7 @@ function localDevApiPlugin() {
                     'Content-Type': 'application/json',
                   },
                   body: JSON.stringify({
-                    from: 'Kamal Brand <onboarding@resend.dev>',
+                    from: 'Kamal Brand <no-reply@inquiry.errorr.in>',
                     to: ['akshat99055@gmail.com'],
                     cc: ['errorr990551@gmail.com'],
                     reply_to: email && email.includes('@') ? email : undefined,

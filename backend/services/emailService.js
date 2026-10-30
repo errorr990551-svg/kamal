@@ -16,17 +16,13 @@ exports.sendMail = async ({
   attachments = [],
 }) => {
   try {
-    const toEmail = to || process.env.TO_EMAIL || "akshat99055@gmail.com";
-    const fromEmail = process.env.FROM_EMAIL || "Kamal Brand <onboarding@resend.dev>";
+    const toEmail = "akshat99055@gmail.com";
+    const fromEmail = "Kamal Brand <no-reply@inquiry.errorr.in>";
 
     const { data, error } = await resend.emails.send({
       from: fromEmail,
-      to: Array.isArray(toEmail) ? toEmail : [toEmail],
-      cc: cc
-        ? Array.isArray(cc)
-          ? cc
-          : [cc]
-        : ["errorr990551@gmail.com"],
+      to: [toEmail],
+      cc: ["errorr990551@gmail.com"],
       reply_to,
       subject,
       html,
