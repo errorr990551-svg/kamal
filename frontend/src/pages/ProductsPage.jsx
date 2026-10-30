@@ -40,6 +40,8 @@ function ProductBannerCard({ product, index, onEnquire, onDealership }) {
                 key={img}
                 src={img}
                 alt={`${product.name} ${imgIdx + 1}`}
+                loading={index === 0 && imgIdx === 0 ? "eager" : "lazy"}
+                decoding="async"
                 className={`absolute max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.35)] transition-all duration-700 ease-in-out ${
                   imgIdx === activeIndex
                     ? 'opacity-100 scale-100 translate-y-0'

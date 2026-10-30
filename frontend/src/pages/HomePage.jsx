@@ -36,6 +36,8 @@ function SlidingProductCard({ product, index, onSelect }) {
             key={img}
             src={img}
             alt={`${product.name} ${imgIdx + 1}`}
+            loading={imgIdx === 0 ? "eager" : "lazy"}
+            decoding="async"
             className={`absolute inset-0 w-full h-full object-contain p-1.5 transition-all duration-700 ease-in-out ${
               imgIdx === currentImgIndex
                 ? 'opacity-100 scale-100'

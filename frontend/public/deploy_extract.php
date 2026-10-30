@@ -5,6 +5,8 @@
  */
 
 header('Content-Type: text/plain; charset=utf-8');
+header('X-LiteSpeed-Purge: *');
+header('Cache-Control: no-cache, no-store, must-revalidate');
 
 // Deployment verification secret
 $validSecret = 'KamalDeploy2026AutoSecret';

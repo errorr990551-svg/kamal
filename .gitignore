@@ -30,6 +30,7 @@ dist-ssr/
 *.local
 *.zip
 deploy.zip
+docs/
 
 # Editor directories and files
 .vscode/*
