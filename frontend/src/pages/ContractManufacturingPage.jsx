@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Factory, Send, ShieldCheck, PhoneCall, Sparkles } from 'lucide-react';
+import { Factory, Send, ShieldCheck, PhoneCall, Sparkles, Loader2 } from 'lucide-react';
+import { submitContractManufacturingForm } from '../services/api';
 
 export default function ContractManufacturingPage({ showToast }) {
   const [formData, setFormData] = useState({
@@ -12,27 +13,48 @@ export default function ContractManufacturingPage({ showToast }) {
     purpose: '',
     extraWords: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    showToast({
-      title: 'Contract Manufacturing Request Received!',
-      description: `Thank you ${formData.name}. Our commercial production team will contact you at ${formData.phone}.`,
-    });
-    setFormData({
-      name: '',
-      productWanted: '',
-      quantity: '',
-      size: '',
-      phone: '',
-      dateWanted: '',
-      purpose: '',
-      extraWords: '',
-    });
+    setIsSubmitting(true);
+
+    try {
+      const result = await submitContractManufacturingForm(formData);
+
+      if (result.success) {
+        showToast({
+          title: 'Contract Manufacturing Request Received!',
+          description: `Thank you ${formData.name}. Our commercial production team will contact you at ${formData.phone}.`,
+        });
+        setFormData({
+          name: '',
+          productWanted: '',
+          quantity: '',
+          size: '',
+          phone: '',
+          dateWanted: '',
+          purpose: '',
+          extraWords: '',
+        });
+      } else {
+        showToast({
+          title: 'Submission Issue',
+          description: result.message || 'Please check your details and try again.',
+        });
+      }
+    } catch {
+      showToast({
+        title: 'Connection Error',
+        description: 'Unable to reach the server. Please try again or call us directly.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -227,13 +249,24 @@ export default function ContractManufacturingPage({ showToast }) {
                 />
               </div>
 
-              {/* Submit Button (Pencil drawing "(Submit)") */}
+              {/* Submit Button */}
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-xl bg-red-900 hover:bg-red-800 text-amber-200 font-bold text-sm uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 rounded-xl bg-red-900 hover:bg-red-800 disabled:opacity-75 disabled:cursor-not-allowed text-amber-200 font-bold text-sm uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Send size={16} /> Submit Manufacturing Proposal
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin text-amber-300" />
+                      <span>Submitting Proposal...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      <span>Submit Manufacturing Proposal</span>
+                    </>
+                  )}
                 </button>
               </div>
 

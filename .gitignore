@@ -7,10 +7,29 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Environment variables
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+*.env
+
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Cloudflare & Wrangler
+.wrangler/
+backend/.wrangler/
+
+# Build outputs
+dist/
+dist-ssr/
 *.local
+*.zip
+deploy.zip
 
 # Editor directories and files
 .vscode/*

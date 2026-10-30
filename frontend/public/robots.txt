@@ -1,0 +1,13 @@
+# ----------------------------------------------------------------------
+# Kamal Brand - Robots Exclusion Protocol (SEO & GSC Optimization)
+# Clean crawler directives with zero Crawl-delay for optimal indexing
+# ----------------------------------------------------------------------
+
+User-agent: *
+Allow: /
+Disallow: /deploy_extract.php
+Disallow: /deploy.zip
+
+# Sitemaps for Googlebot and search indexers
+Sitemap: https://kamalsbrand.in/sitemap.xml
+Sitemap: https://kamalbrand.com/sitemap.xml

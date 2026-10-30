@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheck, CheckCircle2, Building2, Send, PhoneCall, Sparkles } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Building2, Send, PhoneCall, Sparkles, Loader2 } from 'lucide-react';
+import { submitDealershipForm } from '../services/api';
 
 export default function DealershipPage({ showToast }) {
   const [formData, setFormData] = useState({
@@ -11,26 +12,47 @@ export default function DealershipPage({ showToast }) {
     maxQuantity: '',
     specifiedProduct: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    showToast({
-      title: 'Dealership Application Submitted!',
-      description: `Thank you ${formData.name}. Our Kamal Brand team will call you at ${formData.phone} shortly.`,
-    });
-    setFormData({
-      name: '',
-      address: '',
-      state: '',
-      agencyName: '',
-      phone: '',
-      maxQuantity: '',
-      specifiedProduct: '',
-    });
+    setIsSubmitting(true);
+
+    try {
+      const result = await submitDealershipForm(formData);
+
+      if (result.success) {
+        showToast({
+          title: 'Dealership Application Submitted!',
+          description: `Thank you ${formData.name}. Our Kamal Brand team will call you at ${formData.phone} shortly.`,
+        });
+        setFormData({
+          name: '',
+          address: '',
+          state: '',
+          agencyName: '',
+          phone: '',
+          maxQuantity: '',
+          specifiedProduct: '',
+        });
+      } else {
+        showToast({
+          title: 'Submission Issue',
+          description: result.message || 'Please check your details and try again.',
+        });
+      }
+    } catch {
+      showToast({
+        title: 'Connection Error',
+        description: 'Unable to reach the server. Please try again or call us directly.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const benefits = [
@@ -213,9 +235,20 @@ export default function DealershipPage({ showToast }) {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-xl bg-red-900 hover:bg-red-800 text-amber-200 font-bold text-sm uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 rounded-xl bg-red-900 hover:bg-red-800 disabled:opacity-75 disabled:cursor-not-allowed text-amber-200 font-bold text-sm uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Send size={16} /> Submit Dealership Application
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin text-amber-300" />
+                      <span>Submitting Application...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      <span>Submit Dealership Application</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

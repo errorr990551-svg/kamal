@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BrandHeader from './components/BrandHeader';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Toast from './components/Toast';
+import LeadPopupModal from './components/LeadPopupModal';
 
 import HomePage from './pages/HomePage';
 import DealershipPage from './pages/DealershipPage';
@@ -16,6 +17,30 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
 
+  // Synchronize route with URL pathname for proper SEO and SPA deep linking
+  useEffect(() => {
+    const handleRouteChange = () => {
+      const path = window.location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+      if (['dealership', 'products', 'about', 'hampers', 'contract'].includes(path)) {
+        setActiveTab(path);
+      } else {
+        setActiveTab('home');
+      }
+    };
+
+    handleRouteChange();
+    window.addEventListener('popstate', handleRouteChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, []);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    const targetPath = tabId === 'home' ? '/' : `/${tabId}`;
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState(null, '', targetPath);
+    }
+  };
+
   const showToast = (message) => {
     setToastMessage(message);
   };
@@ -24,18 +49,18 @@ export default function App() {
   const handleSearchChange = (query) => {
     setSearchQuery(query);
     if (query.trim().length > 0 && activeTab !== 'products') {
-      setActiveTab('products');
+      handleTabChange('products');
     }
   };
 
   const renderCurrentPage = () => {
     switch (activeTab) {
       case 'home':
-        return <HomePage setActiveTab={setActiveTab} searchQuery={searchQuery} />;
+        return <HomePage setActiveTab={handleTabChange} searchQuery={searchQuery} />;
       case 'dealership':
         return <DealershipPage showToast={showToast} />;
       case 'products':
-        return <ProductsPage searchQuery={searchQuery} setSearchQuery={setSearchQuery} showToast={showToast} setActiveTab={setActiveTab} />;
+        return <ProductsPage searchQuery={searchQuery} setSearchQuery={setSearchQuery} showToast={showToast} setActiveTab={handleTabChange} />;
       case 'about':
         return <AboutPage />;
       case 'hampers':
@@ -43,7 +68,7 @@ export default function App() {
       case 'contract':
         return <ContractManufacturingPage showToast={showToast} />;
       default:
-        return <HomePage setActiveTab={setActiveTab} searchQuery={searchQuery} />;
+        return <HomePage setActiveTab={handleTabChange} searchQuery={searchQuery} />;
     }
   };
 
@@ -56,7 +81,7 @@ export default function App() {
         {/* Navigation Bar shifted below Kamal Brand banner & above second section */}
         <Navbar 
           activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
+          setActiveTab={handleTabChange} 
           searchQuery={searchQuery}
           setSearchQuery={handleSearchChange}
         />
@@ -68,7 +93,10 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <Footer setActiveTab={setActiveTab} />
+      <Footer setActiveTab={handleTabChange} />
+
+      {/* 1.5s Consultation Lead Popup Modal (Image 2 format with website theme) */}
+      <LeadPopupModal />
 
       {/* Toast Popup Notification */}
       {toastMessage && (
