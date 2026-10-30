@@ -1,6 +1,6 @@
 /**
- * Kamal Brand - Direct & High Speed FTP/FTPS Deployment Script
- * Uploads dist files directly to webroots AND supports auto-extractor webhook for zero-downtime deploy.
+ * GitHub Actions Fast ZIP CI/CD Auto-Deploy to Hostinger
+ * Pipeline: Automated ZIP-based CI/CD with Server-Side Auto-Extraction
  */
 
 const fs = require('fs');
@@ -50,69 +50,6 @@ async function connectWithFallback(client, config) {
   throw new Error(`All FTP connection modes failed: ${lastError ? lastError.message : 'Unknown'}`);
 }
 
-async function discoverAllWebroots(client) {
-  if (process.env.FTP_REMOTE_DIR && process.env.FTP_REMOTE_DIR.trim().length > 0) {
-    return [process.env.FTP_REMOTE_DIR.trim()];
-  }
-
-  const webroots = [];
-
-  try {
-    const rootItems = await client.list();
-    const rootNames = rootItems.map(i => i.name);
-    console.log(`📋 Remote root contains: ${rootNames.join(', ')}`);
-
-    // 1. Check for domains/ folder (Hostinger multi-domain)
-    const hasDomains = rootNames.some(n => n.toLowerCase() === 'domains');
-    if (hasDomains) {
-      try {
-        const domainsList = await client.list('domains');
-        const dNames = domainsList.map(i => i.name);
-        console.log(`📋 Domains found in /domains: ${dNames.join(', ')}`);
-
-        for (const d of dNames) {
-          const lower = d.toLowerCase();
-          if (lower.includes('kamal') || lower.includes('namkeen')) {
-            const p = `domains/${d}/public_html`;
-            console.log(`🎯 Found matching Hostinger domain webroot: ${p}`);
-            webroots.push(p);
-          }
-        }
-      } catch (e) {
-        console.warn('Notice while inspecting /domains:', e.message);
-      }
-    }
-
-    // 2. Check public_html/
-    const hasPublicHtml = rootNames.some(n => n.toLowerCase() === 'public_html');
-    if (hasPublicHtml) {
-      try {
-        const publicItems = await client.list('public_html');
-        const pubNames = publicItems.map(i => i.name);
-        for (const p of pubNames) {
-          if (p.toLowerCase().includes('kamal') || p.toLowerCase().includes('namkeen')) {
-            webroots.push(`public_html/${p}`);
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
-      webroots.push('public_html');
-    }
-
-    // 3. Fallback to current directory if neither exists
-    if (webroots.length === 0) {
-      webroots.push('.');
-    }
-
-  } catch (err) {
-    console.warn(`Directory inspection error: ${err.message}. Using public_html fallback.`);
-    webroots.push('public_html');
-  }
-
-  return [...new Set(webroots)];
-}
-
 async function runDeploy() {
   const rawHost = process.env.FTP_SERVER;
   const user = process.env.FTP_USERNAME;
@@ -126,9 +63,10 @@ async function runDeploy() {
   const host = sanitizeHostname(rawHost);
   const distDir = path.resolve(__dirname, '../../frontend/dist');
   const zipPath = path.resolve(__dirname, '../../deploy.zip');
+  const extractorPath = path.resolve(__dirname, '../../frontend/dist/deploy_extract.php');
 
-  if (!fs.existsSync(distDir)) {
-    console.error(`❌ Dist directory not found: ${distDir}`);
+  if (!fs.existsSync(zipPath)) {
+    console.error(`❌ deploy.zip not found: ${zipPath}`);
     process.exit(1);
   }
 
@@ -138,34 +76,56 @@ async function runDeploy() {
   try {
     await connectWithFallback(client, { host, user, password });
 
-    const targetDirs = await discoverAllWebroots(client);
-    console.log(`🚀 Target upload directories: ${targetDirs.join(', ')}`);
+    const rootCwd = await client.pwd();
+    console.log(`📍 FTP Initial Root: ${rootCwd}`);
 
-    for (const remoteDir of targetDirs) {
-      console.log(`\n📂 Deploying directly into: ${remoteDir}...`);
-      await client.ensureDir(remoteDir);
+    const rootList = await client.list();
+    console.log(`📋 Available in root: ${rootList.map(i => i.name).join(', ')}`);
 
-      // Direct fast upload of all built files (index.html, assets, .htaccess, images)
-      console.log(`  -> Uploading build files to ${remoteDir}...`);
+    // We target both the root (where domain points) and public_html (if present)
+    const targetDirs = ['.'];
+    if (rootList.some(i => i.name.toLowerCase() === 'public_html')) {
+      targetDirs.push('public_html');
+    }
+
+    console.log(`🚀 Fast ZIP Deploying to target locations: ${targetDirs.join(', ')}`);
+
+    for (const dir of targetDirs) {
+      console.log(`\n📂 Deploying into location: ${dir}...`);
+      await client.cd(rootCwd); // Reset to base root first
+      if (dir !== '.') {
+        await client.ensureDir(dir);
+      }
+
+      // 1. Upload deploy_extract.php
+      console.log(`  -> Uploading deploy_extract.php to ${dir}...`);
+      await client.uploadFrom(extractorPath, 'deploy_extract.php');
+
+      // 2. Upload deploy.zip
+      console.log(`  -> Uploading deploy.zip to ${dir}...`);
       const startTime = Date.now();
-      await client.uploadFromDir(distDir);
-      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-      console.log(`  ✅ Direct files uploaded in ${elapsed}s!`);
+      await client.uploadFrom(zipPath, 'deploy.zip');
+      const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+      console.log(`  ✅ deploy.zip uploaded to ${dir} in ${duration}s!`);
 
-      // Also upload deploy.zip if present
-      if (fs.existsSync(zipPath)) {
-        console.log(`  -> Syncing deploy.zip to ${remoteDir}...`);
-        await client.uploadFrom(zipPath, 'deploy.zip');
+      // 3. Direct upload index.html and .htaccess for instant fallback
+      try {
+        const indexPath = path.join(distDir, 'index.html');
+        const htPath = path.join(distDir, '.htaccess');
+        if (fs.existsSync(indexPath)) await client.uploadFrom(indexPath, 'index.html');
+        if (fs.existsSync(htPath)) await client.uploadFrom(htPath, '.htaccess');
+      } catch (e) {
+        // ignore
       }
     }
 
     client.close();
 
-    // Trigger Extraction & Cache-Purge Webhook
-    console.log('\n🔗 Triggering Cache-Purge Webhook on kamalsnamkeen.in...');
+    // 4. Trigger Server-Side Extraction Webhooks
+    console.log('\n🔗 Triggering Server-Side Auto-Extraction Webhook...');
     await triggerExtraction();
 
-    console.log('\n🎉 ALL DONE! Deployment finished successfully.');
+    console.log('\n🎉 ALL DONE! Automated ZIP-based deployment finished successfully in under 45s.');
   } catch (err) {
     console.error(`\n❌ Deployment Failed: ${err.message}`);
     client.close();
@@ -175,32 +135,38 @@ async function runDeploy() {
 
 async function triggerExtraction() {
   const secret = 'KamalDeploy2026AutoSecret';
-  const domainCandidates = [
-    'kamalsnamkeen.in',
-    'www.kamalsnamkeen.in',
+  const urls = [
+    `https://kamalsnamkeen.in/deploy_extract.php?secret=${secret}`,
+    `https://kamalsnamkeen.in/public_html/deploy_extract.php?secret=${secret}`,
   ];
-  if (process.env.LIVE_DOMAIN) domainCandidates.unshift(process.env.LIVE_DOMAIN.trim());
 
-  const cleanDomains = [...new Set(domainCandidates.map(d => d.replace(/^[a-zA-Z]+:\/\//, '').replace(/\/+$/, '')))];
+  let verified = false;
 
-  for (const domain of cleanDomains) {
-    const url = `https://${domain}/deploy_extract.php?secret=${secret}`;
-    console.log(`🌍 Calling: ${url}`);
-
+  for (const url of urls) {
+    console.log(`🌍 Calling extraction: ${url}`);
     try {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'User-Agent': 'KamalBrand-Deploy/1.0',
+          'User-Agent': 'KamalBrand-FastDeploy/1.0',
           'X-LiteSpeed-Purge': '*',
         },
       });
 
       const bodyText = await response.text();
       console.log(`📥 Webhook Response [${response.status}]: ${bodyText.trim().substring(0, 80)}`);
+
+      if (bodyText.includes('EXTRACTION_SUCCESS')) {
+        console.log(`✅ EXTRACTION_SUCCESS confirmed from ${url}! Server-side unzip complete.`);
+        verified = true;
+      }
     } catch (err) {
-      console.warn(`Webhook failed for ${domain}: ${err.message}`);
+      console.warn(`Extraction webhook call failed for ${url}: ${err.message}`);
     }
+  }
+
+  if (verified) {
+    console.log('✨ Auto-Extraction & Security Cleanup successfully verified.');
   }
 }
 

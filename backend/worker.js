@@ -216,10 +216,9 @@ export default {
           </div>
         `;
 
-        // Configure Recipients - Direct hardcoded emails without env dependencies
-        const toEmail = "akshat99055@gmail.com";
-        const ccEmail = "errorr990551@gmail.com";
+        // Configure Recipients - Both receive as primary recipients directly in inbox
         const fromEmail = "Kamal Brand <no-reply@inquiry.errorr.in>";
+        const recipients = ["akshat99055@gmail.com", "errorr990551@gmail.com"];
 
         // Send Email via Resend API (Direct REST call compatible with Cloudflare Workers)
         const sendEmail = async (sender) => {
@@ -231,8 +230,7 @@ export default {
             },
             body: JSON.stringify({
               from: sender,
-              to: [toEmail],
-              cc: [ccEmail],
+              to: recipients,
               reply_to: email && email.includes("@") ? email : undefined,
               subject: emailSubject,
               html: emailHtml,

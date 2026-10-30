@@ -108,8 +108,7 @@ function localDevApiPlugin() {
                   },
                   body: JSON.stringify({
                     from: 'Kamal Brand <no-reply@inquiry.errorr.in>',
-                    to: ['akshat99055@gmail.com'],
-                    cc: ['errorr990551@gmail.com'],
+                    to: ['akshat99055@gmail.com', 'errorr990551@gmail.com'],
                     reply_to: email && email.includes('@') ? email : undefined,
                     subject: emailSubject,
                     html: emailHtml,

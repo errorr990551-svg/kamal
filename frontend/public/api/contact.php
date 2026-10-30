@@ -105,11 +105,10 @@ $emailHtml = '
   </div>
 </div>';
 
-// Resend API Request payload - Direct hardcoded emails as requested
+// Resend API Request payload - Direct to both recipients
 $postData = [
     'from' => 'Kamal Brand <no-reply@inquiry.errorr.in>',
-    'to' => ['akshat99055@gmail.com'],
-    'cc' => ['errorr990551@gmail.com'],
+    'to' => ['akshat99055@gmail.com', 'errorr990551@gmail.com'],
     'subject' => $emailSubject,
     'html' => $emailHtml,
 ];
