@@ -74,6 +74,18 @@ if ($formType === 'dealership_application' || !empty($agencyName)) {
 } elseif ($formType === 'contract_manufacturing' || !empty($productWanted)) {
     $badgeText = "Contract Manufacturing";
     $emailSubject = "🏭 Contract Manufacturing Inquiry: " . $name . (!empty($productWanted) ? " ($productWanted)" : "");
+} elseif ($formType === 'hamper_inquiry') {
+    $badgeText = "Gift Hamper Enquiry";
+    $emailSubject = "🎁 Gift Hamper Enquiry: " . $name;
+} elseif ($formType === 'product_enquiry') {
+    $badgeText = "Product Enquiry";
+    $emailSubject = "🛒 Product Enquiry: " . $name;
+} elseif ($formType === 'bulk_order') {
+    $badgeText = "Bulk Order Enquiry";
+    $emailSubject = "📦 Bulk Order Enquiry: " . $name;
+} elseif ($formType === 'contact_page') {
+    $badgeText = "Contact Form";
+    $emailSubject = "✉️ Website Contact: " . $name;
 }
 
 $emailHtml = '

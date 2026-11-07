@@ -1,98 +1,81 @@
 # ----------------------------------------------------------------------
-# Kamal Brand - Apache Web Server Optimization & SPA Routing
-# Fixes GSC 404s, "Crawled - currently not indexed", and enables caching
+# Kamal Brand - Apache / LiteSpeed config (Hostinger)
+# Serves prerendered HTML for every page so crawlers get full content,
+# returns real 404s for unknown URLs, and enables compression + caching.
 # ----------------------------------------------------------------------
 
-# 1. SPA URL Rewriting (Prevents Googlebot 404 on deep routes)
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /pages/404.html
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # Allow direct access to existing files and directories
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
-
-  # Exclude deployment extractor script
+  # 1. Never rewrite the deploy extractor or the PHP contact API.
   RewriteRule ^deploy_extract\.php$ - [L]
-
-  # Route API requests to PHP fallback handler
   RewriteRule ^api/contact/?$ api/contact.php [L,QSA]
 
-  # Route all other URLs to index.html for React Router / SPA navigation
-  RewriteRule ^ index.html [L]
+  # 2. Remove trailing slashes (e.g. /products/ -> /products) so each page has one URL.
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+  # 3. Real files (JS, CSS, images, sitemap, robots) are served as-is.
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # 4. Prerendered pages.
+  RewriteRule ^(products|dealership|hampers|contract|about|contact)$ pages/$1.html [L]
+  RewriteRule ^products/([a-z0-9-]+)$ pages/products/$1.html [L]
+
+  # 5. Anything else that is not a real directory: 404 (served from /pages/404.html).
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/pages/
+  RewriteRule ^.+$ - [R=404,L]
 </IfModule>
 
-# 2. Browser Caching / Leverage Browser Cache (Optimizes Crawl Budget)
+# Browser caching
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresDefault "access plus 1 month"
-
-  # HTML documents (short cache for quick updates)
-  ExpiresByType text/html "access plus 1 hour"
-
-  # CSS, JavaScript
+  ExpiresByType text/html "access plus 0 seconds"
   ExpiresByType text/css "access plus 1 year"
   ExpiresByType application/javascript "access plus 1 year"
   ExpiresByType text/javascript "access plus 1 year"
-
-  # Images and Icons
   ExpiresByType image/webp "access plus 1 year"
   ExpiresByType image/png "access plus 1 year"
   ExpiresByType image/jpeg "access plus 1 year"
-  ExpiresByType image/jpg "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 year"
   ExpiresByType image/x-icon "access plus 1 year"
-
-  # Fonts
-  ExpiresByType font/ttf "access plus 1 year"
-  ExpiresByType font/woff "access plus 1 year"
   ExpiresByType font/woff2 "access plus 1 year"
-
-  # Documents and Data
-  ExpiresByType application/pdf "access plus 1 month"
-  ExpiresByType application/json "access plus 1 hour"
-  ExpiresByType application/xml "access plus 1 hour"
+  ExpiresByType application/xml "access plus 1 day"
+  ExpiresByType application/manifest+json "access plus 1 week"
 </IfModule>
 
-# 3. Gzip / Deflate Compression (Reduces TTFB for Googlebot)
+# Compression
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html
-  AddOutputFilterByType DEFLATE text/css
-  AddOutputFilterByType DEFLATE text/javascript
-  AddOutputFilterByType DEFLATE application/javascript
-  AddOutputFilterByType DEFLATE application/x-javascript
-  AddOutputFilterByType DEFLATE application/json
-  AddOutputFilterByType DEFLATE application/xml
-  AddOutputFilterByType DEFLATE text/xml
-  AddOutputFilterByType DEFLATE text/plain
-  AddOutputFilterByType DEFLATE image/svg+xml
-  AddOutputFilterByType DEFLATE font/ttf
-  AddOutputFilterByType DEFLATE font/otf
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml text/javascript application/javascript application/json application/xml application/manifest+json image/svg+xml
 </IfModule>
 
-# 4. Security & Optimization Headers
+AddType application/manifest+json .webmanifest
+
 <IfModule mod_headers.c>
-  # Prevent MIME type sniffing
   Header set X-Content-Type-Options "nosniff"
-
-  # Protect against clickjacking
   Header set X-Frame-Options "SAMEORIGIN"
-
-  # Cross-Site Scripting protection
-  Header set X-XSS-Protection "1; mode=block"
-
-  # Referrer policy
   Header set Referrer-Policy "strict-origin-when-cross-origin"
 
-  # Cache-Control for immutable static assets
-  <FilesMatch "\.(js|css|webp|png|jpg|jpeg|svg|woff2)$">
-    Header set Cache-Control "max-age=31536000, public, immutable"
+  # Hashed build assets never change: cache forever.
+  <FilesMatch "^.+-[A-Za-z0-9_-]{8,}\.(js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
-
-  # HTML Cache-Control
-  <FilesMatch "\.(html)$">
-    Header set Cache-Control "max-age=3600, must-revalidate"
+  <FilesMatch "\.(webp|png|jpg|jpeg|svg|ico|woff2)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  # HTML must always be revalidated so visitors get new content right after a deploy.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "^(deploy_extract\.php)$">
+    Header set X-Robots-Tag "noindex, nofollow"
   </FilesMatch>
 </IfModule>
-

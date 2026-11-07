@@ -52,9 +52,16 @@ function localDevApiPlugin() {
                 return;
               }
 
-              // Base64 decoded fallback key
-              const fallbackKey = atob('cmVfMVBtcFBranRfNlZOUFFNMlBnWVZoU0ZyZ2tXS3VqVkNX');
-              const apiKey = process.env.RESEND_API_KEY || fallbackKey;
+              // Local dev only: emails are sent only if RESEND_API_KEY is set in your shell.
+              // Without it, the submission is logged to the terminal so forms can be tested safely.
+              const apiKey = process.env.RESEND_API_KEY;
+              if (!apiKey) {
+                console.log('[dev api] form submission (not emailed, RESEND_API_KEY not set):', body);
+                res.setHeader('Content-Type', 'application/json');
+                res.statusCode = 200;
+                res.end(JSON.stringify({ success: true, message: 'Dev mode: submission logged, not emailed.' }));
+                return;
+              }
 
               let badgeText = 'Lead Quote Request';
               let emailSubject = `⚡ New 30-Min Quote Request: ${name}`;

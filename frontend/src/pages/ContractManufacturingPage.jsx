@@ -1,280 +1,175 @@
-import React, { useState } from 'react';
-import { Factory, Send, ShieldCheck, PhoneCall, Sparkles, Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Factory, Send, ShieldCheck, PhoneCall, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { submitContractManufacturingForm } from '../services/api';
+import { phoneError, emailError } from '../utils/validate';
+import Field from '../components/Field';
+import { FormSuccess, FormError } from '../components/FormStatus';
+import { FaqSection, PageHeader } from '../components/Common';
+import { CONTRACT_FAQS } from '../data/faqs';
+import { BUSINESS } from '../data/site';
 
-export default function ContractManufacturingPage({ showToast }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    productWanted: '',
-    quantity: '',
-    size: '',
-    phone: '',
-    dateWanted: '',
-    purpose: '',
-    extraWords: '',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const EMPTY = { name: '', productWanted: '', quantity: '', size: '', phone: '', email: '', dateWanted: '', purpose: '', extraWords: '' };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+const CAPABILITIES = [
+  { title: 'Bulk Production', text: 'Frying and packing capacity for large and repeat orders of namkeen.' },
+  { title: 'Custom Recipe Formulation', text: 'Adjust spice level, sweetness, seasoning and blend for your brand and market.' },
+  { title: 'Private Label Packing', text: 'Packing support with your brand on custom printed pouches and boxes.' },
+];
+
+const PRODUCTS_WE_MAKE = ['Bhujia', 'Sev', 'Papdi Gathiya', 'Phool Gathiya', 'Jhal Chanachur', 'Mitha Chanachur', 'Chana Dal', 'Fried Chura', 'Salted Peanuts', 'Masala Matar'];
+
+const todayISO = () => new Date().toISOString().slice(0, 10);
+
+export default function ContractManufacturingPage() {
+  const [form, setForm] = useState(EMPTY);
+  const [errors, setErrors] = useState({});
+  const [sending, setSending] = useState(false);
+  const [serverError, setServerError] = useState('');
+  const [done, setDone] = useState(null);
+  // Set after mount so the prerendered HTML never carries a stale build-time date.
+  const [minDate, setMinDate] = useState(undefined);
+  useEffect(() => setMinDate(todayISO()), []);
+
+  const onChange = (e) => {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    if (errors[e.target.name]) setErrors((er) => ({ ...er, [e.target.name]: '' }));
   };
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const result = await submitContractManufacturingForm(formData);
-
-      if (result.success) {
-        showToast({
-          title: 'Contract Manufacturing Request Received!',
-          description: `Thank you ${formData.name}. Our commercial production team will contact you at ${formData.phone}.`,
-        });
-        setFormData({
-          name: '',
-          productWanted: '',
-          quantity: '',
-          size: '',
-          phone: '',
-          dateWanted: '',
-          purpose: '',
-          extraWords: '',
-        });
-      } else {
-        showToast({
-          title: 'Submission Issue',
-          description: result.message || 'Please check your details and try again.',
-        });
-      }
-    } catch {
-      showToast({
-        title: 'Connection Error',
-        description: 'Unable to reach the server. Please try again or call us directly.',
-      });
-    } finally {
-      setIsSubmitting(false);
+    const next = {
+      name: form.name.trim() ? '' : 'Please enter your name.',
+      productWanted: form.productWanted.trim() ? '' : 'Please tell us which product you need.',
+      quantity: form.quantity.trim() ? '' : 'Please enter the quantity.',
+      size: form.size.trim() ? '' : 'Please enter the pack size.',
+      phone: phoneError(form.phone),
+      email: emailError(form.email),
+      dateWanted: !form.dateWanted ? 'Please choose a date.' : form.dateWanted < todayISO() ? 'Please choose a future date.' : '',
+    };
+    setErrors(next);
+    if (Object.values(next).some(Boolean)) {
+      document.querySelector('[aria-invalid="true"]')?.focus();
+      return;
+    }
+    setSending(true);
+    setServerError('');
+    const result = await submitContractManufacturingForm(form);
+    setSending(false);
+    if (result.success) {
+      setDone({ name: form.name, phone: form.phone });
+      setForm(EMPTY);
+    } else {
+      setServerError(result.message);
     }
   };
 
   return (
     <div className="space-y-10 animate-fadeIn pb-8">
-      <div className="max-w-7xl mx-auto px-4 space-y-10">
-
-        {/* Section Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-800/10 border border-red-800/20 text-red-900 text-xs font-bold uppercase tracking-wider">
-            <Factory size={14} /> Commercial B2B Solutions
-          </div>
-          <h2 className="font-serif-brand text-3xl md:text-5xl font-extrabold text-stone-900">
-            CONTRACT MANUFACTURING
-          </h2>
-          <p className="text-stone-600 text-sm max-w-2xl mx-auto">
-            Get your own private label papads, toasts, and namkeens processed in our state-of-the-art manufacturing plant.
-          </p>
-          <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mt-2" />
-        </div>
+      <div className="max-w-7xl mx-auto px-4 space-y-10 pt-2">
+        <PageHeader
+          eyebrow="Commercial B2B Solutions"
+          icon={Factory}
+          title="Namkeen Contract Manufacturing & Private Label"
+          intro="Launch or grow your own namkeen brand without building a factory. Kamal Brand manufactures bhujia, sev, gathiya, chanachur, chana dal and more for businesses, made to your recipe, pack size and timeline at our unit in Raniganj, West Bengal."
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-          {/* Left Info Panel */}
           <div className="lg:col-span-4 bg-linear-to-br from-stone-900 via-red-950 to-stone-950 text-amber-100 p-6 rounded-3xl shadow-2xl border-2 border-amber-500/40 space-y-6">
-            <div className="border-b border-amber-500/30 pb-3">
-              <h3 className="font-serif-brand text-xl font-bold text-white flex items-center gap-2">
-                <Sparkles className="text-amber-400" size={20} />
-                Why Contract Manufacture With Us?
-              </h3>
+            <h2 className="font-serif-brand text-xl font-bold text-white flex items-center gap-2 border-b border-amber-500/30 pb-3">
+              <Sparkles className="text-amber-400" size={20} aria-hidden="true" /> Why Contract Manufacture With Us?
+            </h2>
+            <div className="space-y-4">
+              {CAPABILITIES.map((c) => (
+                <div key={c.title} className="p-3.5 rounded-xl bg-stone-900/80 border border-amber-500/20 space-y-1">
+                  <h3 className="font-bold text-amber-300 text-base">{c.title}</h3>
+                  <p className="text-stone-300 text-sm leading-relaxed">{c.text}</p>
+                </div>
+              ))}
             </div>
-
-            <div className="space-y-4 text-xs">
-              <div className="p-3.5 rounded-xl bg-stone-900/80 border border-amber-500/20 space-y-1">
-                <span className="font-bold text-amber-300 block text-sm">High Capacity Processing</span>
-                <span className="text-stone-300 leading-relaxed">Modern automated drying and frying lines capable of handling large bulk orders seamlessly.</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-stone-900/80 border border-amber-500/20 space-y-1">
-                <span className="font-bold text-amber-300 block text-sm">Custom Recipe Formulation</span>
-                <span className="text-stone-300 leading-relaxed">Customize spice blends, thickness, size, and pulse proportion for your brand.</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-stone-900/80 border border-amber-500/20 space-y-1">
-                <span className="font-bold text-amber-300 block text-sm">Private Label Packing</span>
-                <span className="text-stone-300 leading-relaxed">Complete packaging support with custom pouch printing and box packaging.</span>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-amber-500/30 text-amber-200 text-xs flex items-center justify-between">
-              <span className="flex items-center gap-1"><ShieldCheck size={16} className="text-amber-400" /> FSSAI Compliant</span>
-              <span className="flex items-center gap-1"><PhoneCall size={16} className="text-amber-400" /> Bulk Pricing</span>
+            <div className="pt-2 border-t border-amber-500/30 text-amber-200 text-sm flex flex-wrap gap-3 items-center justify-between">
+              <span className="flex items-center gap-1">
+                <ShieldCheck size={16} className="text-amber-400" aria-hidden="true" /> FSSAI Compliant
+              </span>
+              <a href={`tel:${BUSINESS.phones[0].tel}`} className="flex items-center gap-1 py-2 hover:text-white">
+                <PhoneCall size={16} className="text-amber-400" aria-hidden="true" /> {BUSINESS.phones[0].display}
+              </a>
             </div>
           </div>
 
-          {/* Right Form: CONTRACT MANUFACTURING FORM (Wireframe 2 bottom form) */}
           <div className="lg:col-span-8 bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-stone-200 space-y-6">
             <div className="border-b border-stone-200 pb-3">
-              <h3 className="font-serif-brand text-2xl font-bold text-stone-900">
-                Contract Manufacturing Request
-              </h3>
-              <p className="text-xs text-stone-500">Please provide your custom production specifications</p>
+              <h2 className="font-serif-brand text-2xl font-bold text-stone-900">Contract Manufacturing Request</h2>
+              <p className="text-sm text-stone-500">Share your production requirements. Fields marked * are required.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Name :- */}
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    Name :- *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-800 text-sm"
-                  />
+            {done ? (
+              <FormSuccess title="Request Received!" onReset={() => setDone(null)} resetLabel="Submit another request">
+                Thank you, {done.name}. Our production team will contact you on <strong>{done.phone}</strong> to discuss your requirement.
+              </FormSuccess>
+            ) : (
+              <form onSubmit={onSubmit} noValidate className="space-y-4">
+                <FormError message={serverError} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Name" required name="name" autoComplete="name" value={form.name} onChange={onChange} error={errors.name} placeholder="Your full name" disabled={sending} />
+                  <Field label="Product You Want" required name="productWanted" value={form.productWanted} onChange={onChange} error={errors.productWanted} placeholder="e.g. Bhujia, Chanachur, Gathiya" disabled={sending} />
                 </div>
-
-                {/* Product You want :- */}
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    Product You want :- *
-                  </label>
-                  <input
-                    type="text"
-                    name="productWanted"
-                    required
-                    value={formData.productWanted}
-                    onChange={handleChange}
-                    placeholder="e.g. Urad Papad, Moong Papad, Toast"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-800 text-sm"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Quantity" required name="quantity" value={form.quantity} onChange={onChange} error={errors.quantity} placeholder="e.g. 1000 kg / 500 cartons" disabled={sending} />
+                  <Field label="Pack Size" required name="size" value={form.size} onChange={onChange} error={errors.size} placeholder="e.g. 200 g pouch" disabled={sending} />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Quantity :- */}
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    Quantity :- *
-                  </label>
-                  <input
-                    type="text"
-                    name="quantity"
-                    required
-                    value={formData.quantity}
-                    onChange={handleChange}
-                    placeholder="e.g. 1000 Kg / 500 Cartons"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-800 text-sm"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Phone No." required type="tel" inputMode="tel" name="phone" autoComplete="tel" value={form.phone} onChange={onChange} error={errors.phone} placeholder="10-digit mobile number" disabled={sending} />
+                  <Field label="Date You Need It By" required type="date" name="dateWanted" min={minDate} value={form.dateWanted} onChange={onChange} error={errors.dateWanted} disabled={sending} />
                 </div>
-
-                {/* Size :- */}
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    Size :- *
-                  </label>
-                  <input
-                    type="text"
-                    name="size"
-                    required
-                    value={formData.size}
-                    onChange={handleChange}
-                    placeholder="e.g. 7 inch / 200g Pouch"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-800 text-sm"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Email" type="email" inputMode="email" name="email" autoComplete="email" value={form.email} onChange={onChange} error={errors.email} placeholder="Optional" disabled={sending} />
+                  <Field label="Purpose" name="purpose" value={form.purpose} onChange={onChange} placeholder="e.g. Retail, export, white label" disabled={sending} />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Phone no. :- */}
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    Phone no. :- *
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="10-digit phone number"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-800 text-sm"
-                  />
-                </div>
-
-                {/* DATE You want :- */}
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                    DATE You want :- *
-                  </label>
-                  <input
-                    type="date"
-                    name="dateWanted"
-                    required
-                    value={formData.dateWanted}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-800 text-sm"
-                  />
-                </div>
-              </div>
-
-              {/* For Which Purpose :- */}
-              <div>
-                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  For Which Purpose :-
-                </label>
-                <input
-                  type="text"
-                  name="purpose"
-                  value={formData.purpose}
-                  onChange={handleChange}
-                  placeholder="e.g. Retail distribution, Export, White label brand"
-                  className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-800 text-sm"
-                />
-              </div>
-
-              {/* Extra Words :- */}
-              <div>
-                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
-                  Extra Words :-
-                </label>
-                <textarea
-                  name="extraWords"
-                  rows={3}
-                  value={formData.extraWords}
-                  onChange={handleChange}
-                  placeholder="Any additional recipe instructions, custom packaging specifications..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-800 text-sm"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div className="pt-2">
+                <Field label="Additional Details" as="textarea" rows={3} name="extraWords" value={form.extraWords} onChange={onChange} placeholder="Recipe instructions, packaging specifications, branding..." disabled={sending} />
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-3.5 rounded-xl bg-red-900 hover:bg-red-800 disabled:opacity-75 disabled:cursor-not-allowed text-amber-200 font-bold text-sm uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                  disabled={sending}
+                  className="w-full py-3.5 rounded-xl bg-red-900 hover:bg-red-800 disabled:opacity-75 disabled:cursor-not-allowed text-amber-200 font-bold text-sm uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  {isSubmitting ? (
+                  {sending ? (
                     <>
-                      <Loader2 size={16} className="animate-spin text-amber-300" />
-                      <span>Submitting Proposal...</span>
+                      <Loader2 size={16} className="animate-spin text-amber-300" /> Submitting...
                     </>
                   ) : (
                     <>
-                      <Send size={16} />
-                      <span>Submit Manufacturing Proposal</span>
+                      <Send size={16} /> Submit Manufacturing Request
                     </>
                   )}
                 </button>
-              </div>
-
-            </form>
+              </form>
+            )}
           </div>
-
         </div>
 
+        <section className="bg-white/95 rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl border-2 border-amber-500/40 space-y-5">
+          <h2 className="font-serif-brand text-2xl md:text-3xl font-extrabold text-stone-900">Private Label Namkeen Products We Can Make</h2>
+          <ul className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            {PRODUCTS_WE_MAKE.map((p) => (
+              <li key={p} className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-sm font-semibold text-stone-800">
+                <CheckCircle2 size={16} className="text-amber-600 shrink-0" aria-hidden="true" /> {p}
+              </li>
+            ))}
+          </ul>
+          <div className="text-stone-700 leading-relaxed space-y-3">
+            <h3 className="font-serif-brand font-bold text-xl text-stone-900">How our third-party namkeen manufacturing works</h3>
+            <ol className="list-decimal pl-5 space-y-1.5">
+              <li><strong>Share your requirement:</strong> the product, quantity, pack size, target date and purpose.</li>
+              <li><strong>Recipe & sample:</strong> we discuss taste, spice level and packaging and agree the specification.</li>
+              <li><strong>Quote & confirmation:</strong> you receive pricing and timelines for your order.</li>
+              <li><strong>Production & packing:</strong> your namkeen is made, packed under your brand and dispatched.</li>
+            </ol>
+            <p>
+              Contract manufacturing suits new snack brands, supermarkets building a private label range, distributors who want their own brand, exporters, and caterers or corporates who need large, consistent quantities.
+            </p>
+          </div>
+        </section>
+
+        <FaqSection faqs={CONTRACT_FAQS} title="Contract Manufacturing FAQs" />
       </div>
     </div>
   );

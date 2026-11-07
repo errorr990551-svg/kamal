@@ -1,8 +1,31 @@
 @import "tailwindcss";
 
+@theme {
+  --animate-fadeIn: fadeIn 0.35s ease-out both;
+  --animate-slideUp: slideUp 0.35s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  :focus-visible {
+    outline: 3px solid #f59e0b;
+    outline-offset: 2px;
   }
 }
 
@@ -11,76 +34,63 @@
 }
 
 .font-cinzel {
-  font-family: 'Cinzel', serif;
+  font-family: 'Cinzel', Georgia, serif;
 }
 
-/* Floral Pattern using user's Kamal Brand floral texture */
+/* Kamal Brand floral texture (optimised 840px tile) */
 .bg-kamal-pattern {
   background-color: #9c0914;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.15) 0%, rgba(120, 6, 12, 0.5) 100%),
-    url('/Kamal%20Brand.webp');
+    url('/img/kamal-pattern-840.webp');
   background-repeat: repeat;
   background-size: 380px auto;
 }
 
 .bg-kamal-website-bg {
   background-color: #880812;
-  background-image: url('/Kamal%20Brand.webp');
+  background-image: url('/img/kamal-pattern-840.webp');
   background-repeat: repeat;
   background-size: 420px auto;
-  background-attachment: fixed;
 }
 
-.bg-kamal-subtle-pattern {
-  background-color: #880812;
-  background-image: url('/Kamal%20Brand.webp');
-  background-repeat: repeat;
-  background-size: 420px auto;
-  background-attachment: fixed;
+/* Fixed backgrounds are janky / unsupported on phones and tablets, so only use them with a mouse. */
+@media (hover: hover) and (pointer: fine) {
+  .bg-kamal-website-bg {
+    background-attachment: fixed;
+  }
 }
 
-/* Hero banner responsive height */
 .hero-banner-frame {
-  min-height: 380px;
+  min-height: 420px;
 }
 @media (min-width: 640px) {
-  .hero-banner-frame {
-    min-height: 460px;
-  }
+  .hero-banner-frame { min-height: 460px; }
 }
 @media (min-width: 768px) {
-  .hero-banner-frame {
-    min-height: 520px;
-  }
+  .hero-banner-frame { min-height: 520px; }
 }
 @media (min-width: 1024px) {
-  .hero-banner-frame {
-    min-height: 580px;
-  }
+  .hero-banner-frame { min-height: 580px; }
 }
 
-/* Product banner responsive height */
 .product-banner-frame {
   min-height: 340px;
 }
 @media (min-width: 1024px) {
-  .product-banner-frame {
-    min-height: 380px;
+  .product-banner-frame { min-height: 380px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #fdfbf7;
-}
-::-webkit-scrollbar-thumb {
-  background: #b91c1c;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #7f1d1d;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #fdfbf7; }
+::-webkit-scrollbar-thumb { background: #b91c1c; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #7f1d1d; }

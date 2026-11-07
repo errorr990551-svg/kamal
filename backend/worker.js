@@ -35,7 +35,13 @@ export default {
     // Contact & Inquiries endpoint
     if (url.pathname === "/api/contact" && request.method === "POST") {
       try {
-        const body = await request.json();
+        const rawBody = await request.json();
+        // Escape every submitted value before it is placed in the HTML email (prevents HTML injection).
+        const escapeHtml = (v) =>
+          String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+        const body = Object.fromEntries(
+          Object.entries(rawBody || {}).map(([k, v]) => [k, typeof v === "string" ? escapeHtml(v.trim()).slice(0, 5000) : v])
+        );
         const {
           formType = "lead_popup",
           name,
@@ -84,16 +90,29 @@ export default {
           console.error("RESEND_API_KEY is not configured.");
         }
 
-        // Determine Form Type Badge and Subject Line
+        // Determine Form Type Badge and Subject Line (subjects are plain text, so use the unescaped name)
+        const subjectName = String(rawBody.name || "").replace(/[\r\n]+/g, " ").trim().slice(0, 100);
         let badgeText = "Lead Quote Request";
-        let emailSubject = `⚡ New 30-Min Quote Request: ${name}`;
+        let emailSubject = `⚡ New 30-Min Quote Request: ${subjectName}`;
 
         if (formType === "dealership_application" || agencyName) {
           badgeText = "Dealership Application";
-          emailSubject = `🌟 New Dealership Application: ${name} (${agencyName || state || "Dealership"})`;
+          emailSubject = `🌟 New Dealership Application: ${subjectName} (${agencyName || state || "Dealership"})`;
         } else if (formType === "contract_manufacturing" || productWanted) {
           badgeText = "Contract Manufacturing";
-          emailSubject = `🏭 Contract Manufacturing Inquiry: ${name} (${productWanted || "Private Label"})`;
+          emailSubject = `🏭 Contract Manufacturing Inquiry: ${subjectName} (${productWanted || "Private Label"})`;
+        } else if (formType === "hamper_inquiry") {
+          badgeText = "Gift Hamper Enquiry";
+          emailSubject = `🎁 Gift Hamper Enquiry: ${subjectName}`;
+        } else if (formType === "product_enquiry") {
+          badgeText = "Product Enquiry";
+          emailSubject = `🛒 Product Enquiry: ${subjectName}`;
+        } else if (formType === "bulk_order") {
+          badgeText = "Bulk Order Enquiry";
+          emailSubject = `📦 Bulk Order Enquiry: ${subjectName}`;
+        } else if (formType === "contact_page") {
+          badgeText = "Contact Form";
+          emailSubject = `✉️ Website Contact: ${subjectName}`;
         }
 
         // Branded Kamal Brand HTML Email Template
@@ -231,7 +250,7 @@ export default {
             body: JSON.stringify({
               from: sender,
               to: recipients,
-              reply_to: email && email.includes("@") ? email : undefined,
+              reply_to: rawBody.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawBody.email) ? rawBody.email : undefined,
               subject: emailSubject,
               html: emailHtml,
             }),
