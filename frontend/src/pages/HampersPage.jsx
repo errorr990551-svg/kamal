@@ -47,23 +47,23 @@ export default function HampersPage({ showToast }) {
 
         {/* Section Title */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-800/10 border border-red-800/20 text-red-900 text-xs font-bold uppercase tracking-wider">
-            <Gift size={14} /> Festival & Celebration Packs
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider backdrop-blur-xs">
+            <Gift size={14} className="text-amber-300" /> Festival & Celebration Packs
           </div>
-          <h2 className="font-serif-brand text-3xl md:text-5xl font-extrabold text-stone-900">
+          <h2 className="font-serif-brand text-3xl md:text-5xl font-extrabold text-amber-400 drop-shadow-md tracking-wider">
             HAMPERS
           </h2>
-          <p className="text-stone-600 text-sm max-w-2xl mx-auto">
+          <p className="text-amber-100 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
             Share authentic traditional taste with your loved ones, corporate partners, and family.
           </p>
-          <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mt-2" />
+          <div className="w-24 h-1 bg-amber-400 mx-auto rounded-full mt-2 shadow-sm" />
         </div>
 
         {/* 1. FOR GIFTING (Wireframe 2 middle top) */}
         <section className="space-y-6">
-          <div className="border-b-2 border-red-900/20 pb-2">
-            <h3 className="font-serif-brand text-2xl font-bold text-stone-900 flex items-center gap-2">
-              <Sparkles className="text-amber-600" size={24} />
+          <div className="border-b-2 border-amber-400/30 pb-2">
+            <h3 className="font-serif-brand text-2xl font-bold text-amber-300 drop-shadow-sm flex items-center gap-2">
+              <Sparkles className="text-amber-400" size={24} />
               FOR GIFTING :
             </h3>
           </div>

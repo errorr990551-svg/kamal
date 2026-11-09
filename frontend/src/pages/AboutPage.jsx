@@ -16,16 +16,16 @@ export default function AboutPage() {
 
         {/* Section Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-800/10 border border-red-800/20 text-red-900 text-xs font-bold uppercase tracking-wider">
-            <Award size={14} /> Our Tradition & Heritage
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider backdrop-blur-xs">
+            <Award size={14} className="text-amber-300" /> Our Tradition & Heritage
           </div>
-          <h2 className="font-serif-brand text-3xl md:text-5xl font-extrabold text-stone-900">
+          <h2 className="font-serif-brand text-3xl md:text-5xl font-extrabold text-amber-400 drop-shadow-md tracking-wider">
             ABOUT US
           </h2>
-          <p className="text-stone-600 text-sm max-w-2xl mx-auto">
+          <p className="text-amber-100 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
             Delivering authentic flavor, rich heritage, and uncompromised food purity to every household.
           </p>
-          <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full mt-2" />
+          <div className="w-24 h-1 bg-amber-400 mx-auto rounded-full mt-2 shadow-sm" />
         </div>
 
         {/* 1. KNOW OUR QUALITY FIRST (Wireframe 2 top block) */}
