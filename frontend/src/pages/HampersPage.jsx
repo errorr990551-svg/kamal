@@ -88,8 +88,8 @@ export default function HampersPage() {
         />
 
         <section aria-labelledby="gifting-title" className="space-y-6">
-          <h2 id="gifting-title" className="font-serif-brand text-2xl md:text-3xl font-bold text-white flex items-center gap-2 drop-shadow">
-            <Sparkles className="text-amber-300" size={24} aria-hidden="true" /> For Gifting
+          <h2 id="gifting-title" className="font-serif-brand text-2xl md:text-3xl font-bold text-amber-300 flex items-center gap-2 drop-shadow">
+            <Sparkles className="text-amber-400" size={24} aria-hidden="true" /> For Gifting
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {HAMPERS.map((h) => {
