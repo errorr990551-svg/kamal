@@ -1,4 +1,6 @@
-import { BUSINESS } from './site';
+import { BUSINESS, MARKET_AREAS } from './site';
+
+const MAIN_CITIES = 'Raniganj, Asansol, Durgapur, Bardhaman, Bolpur, Bankura, Purulia, Kolkata, Howrah, Kharagpur, Malda and Siliguri';
 
 export const GENERAL_FAQS = [
   {
@@ -16,6 +18,10 @@ export const GENERAL_FAQS = [
   {
     q: 'How can I become a Kamal Brand dealer or distributor?',
     a: 'Fill in the dealership application on the Apply For Dealership page with your name, agency, address, state and phone number. Our team reviews every application and calls you to discuss your area, product mix and order quantity.',
+  },
+  {
+    q: 'Which cities in West Bengal does Kamal Brand supply?',
+    a: `As a namkeen manufacturer in West Bengal, we take bulk orders from ${MAIN_CITIES}, along with other towns in ${MARKET_AREAS.length} regions listed in the Market Areas section. Share your location and our team will confirm delivery for your area.`,
   },
   {
     q: 'Do you supply outside West Bengal?',
@@ -39,6 +45,10 @@ export const DEALER_FAQS = [
   {
     q: 'Who can apply for a Kamal Brand dealership?',
     a: 'Grocery and kirana shop owners, wholesalers, stockists, super-stockists and distribution agencies can apply. Tell us about your business and the area you cover.',
+  },
+  {
+    q: 'Is a Kamal Brand namkeen distributorship available in my city?',
+    a: `We are appointing dealers and distributors across West Bengal, including ${MAIN_CITIES}. Apply with your town and the area you cover, and we will tell you if your territory is open.`,
   },
   {
     q: 'What information do I need to apply?',
@@ -85,5 +95,40 @@ export const productFaqs = (product) => [
   {
     q: `Can I buy ${product.name} wholesale or become a dealer?`,
     a: `Yes. Retailers, wholesalers and distributors can order ${product.name} directly from the manufacturer in Raniganj, West Bengal. Apply on our dealership page or send an enquiry for bulk prices.`,
+  },
+];
+
+// City pages: the city's own questions first, then three shared questions written around the city's details.
+export const cityFaqs = (city) => [
+  {
+    q: `Is Kamal Brand a mixture manufacturer in ${city.name}?`,
+    a:
+      city.km === 0
+        ? `Yes. Kamal Brand's factory is in ${city.name}, where we make chanachur mixture, bhujia, sev, gathiya and other namkeen. Local shops, wholesalers and distributors can buy directly from the manufacturer.`
+        : `Kamal Brand manufactures in Raniganj, about ${city.km} km from ${city.name}, and supplies ${city.name} directly from the factory. Shops, wholesalers and distributors in ${city.name} buy from the manufacturer, not through a middle layer.`,
+  },
+  ...city.faqs,
+  {
+    q: `How do I get a mixture distributorship or dealership in ${city.name}?`,
+    a: `Fill in the dealership application on our Apply For Dealership page, mention ${city.name} and the towns you cover (for example ${city.nearby.slice(0, 3).join(', ')}), or call ${BUSINESS.phones[0].display}. Our team will call you to discuss the territory, product mix and terms.`,
+  },
+];
+
+export const HUB_FAQS = [
+  {
+    q: 'What does "mixture" mean in West Bengal?',
+    a: 'In Bengal, "mixture" usually means chanachur: a crunchy blend of besan sev, maize chips, peanuts and spices. Kamal Brand makes spicy Jhal Chanachur, sweet-savoury Mitha Chanachur and a Fried Chura mixture, along with single-variety namkeen such as bhujia, sev and gathiya.',
+  },
+  {
+    q: 'Where is the Kamal Brand mixture factory?',
+    a: `Our factory is in ${BUSINESS.address.locality}, ${BUSINESS.address.district} district, West Bengal, on NH19. From here we supply cities across the state, from Asansol and Durgapur to Kolkata, Kharagpur, Malda and Siliguri.`,
+  },
+  {
+    q: 'My city is not on the list. Can I still apply?',
+    a: 'Yes. The cities listed are our main markets, but we welcome dealer and distributor applications from any town in West Bengal and from neighbouring states. Tell us your location and coverage when you apply.',
+  },
+  {
+    q: 'What is the difference between a dealer and a distributor?',
+    a: 'A distributor usually holds stock and supplies many retailers across an area, while a dealer or retailer sells to end customers from a shop. Kamal Brand works with both: apply with details of your business and we will suggest the right arrangement.',
   },
 ];

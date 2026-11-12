@@ -7,6 +7,7 @@ import { IMG } from '../data/site';
 import { ProductCircleCard } from '../components/ProductVisuals';
 import { FaqSection } from '../components/Common';
 import { useEnquiry } from '../components/Enquiry';
+import MarketAreas from '../components/MarketAreas';
 
 const BUSINESS_CARDS = [
   {
@@ -72,7 +73,7 @@ export default function HomePage({ searchQuery }) {
               </p>
               <h1 className="font-serif-brand font-extrabold text-white leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
                 <span className="block text-base sm:text-lg md:text-xl font-semibold text-amber-200 mb-2 font-sans tracking-wide">
-                  Kamal Brand Namkeen · Raniganj, West Bengal
+                  Kamal Brand · Namkeen Manufacturer in West Bengal
                 </span>
                 <span className="block text-3xl sm:text-4xl md:text-5xl">Taste Jo Dil Mein Bas Jaaye,</span>
                 <span className="block text-3xl sm:text-4xl md:text-5xl text-amber-300">Quality Jo Bharosa Ban Jaaye</span>
@@ -223,6 +224,8 @@ export default function HomePage({ searchQuery }) {
             </Link>
           </div>
         </section>
+
+        <MarketAreas variant="manufacturer" />
 
         <FaqSection faqs={GENERAL_FAQS} />
       </div>

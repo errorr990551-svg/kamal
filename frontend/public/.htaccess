@@ -27,6 +27,8 @@ ErrorDocument 404 /pages/404.html
   # 4. Prerendered pages.
   RewriteRule ^(products|dealership|hampers|contract|about|contact)$ pages/$1.html [L]
   RewriteRule ^products/([a-z0-9-]+)$ pages/products/$1.html [L]
+  RewriteRule ^mixture-manufacturer-distributor$ pages/mixture-manufacturer-distributor.html [L]
+  RewriteRule ^mixture-manufacturer-distributor/([a-z0-9-]+)$ pages/mixture-manufacturer-distributor/$1.html [L]
 
   # 5. Anything else that is not a real directory: 404 (served from /pages/404.html).
   RewriteCond %{REQUEST_FILENAME} !-d

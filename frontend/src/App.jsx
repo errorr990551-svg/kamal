@@ -16,7 +16,10 @@ import AboutPage from './pages/AboutPage';
 import HampersPage from './pages/HampersPage';
 import ContractManufacturingPage from './pages/ContractManufacturingPage';
 import ContactPage from './pages/ContactPage';
+import CityPage from './pages/CityPage';
+import CitiesHubPage from './pages/CitiesHubPage';
 import NotFoundPage from './pages/NotFoundPage';
+import { CITY_HUB_PATH } from './data/cities';
 
 function Shell() {
   const { path, navigate } = useRouter();
@@ -43,6 +46,12 @@ function Shell() {
       break;
     case '/products/:slug':
       page = <ProductDetailPage key={route.product.slug} product={route.product} />;
+      break;
+    case '/city/:slug':
+      page = <CityPage key={route.city.slug} city={route.city} />;
+      break;
+    case CITY_HUB_PATH:
+      page = <CitiesHubPage />;
       break;
     case '/dealership':
       page = <DealershipPage />;

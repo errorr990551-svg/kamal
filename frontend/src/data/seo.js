@@ -1,12 +1,13 @@
-import { SITE_URL, BUSINESS, IMG } from './site';
+import { SITE_URL, BUSINESS, IMG, MARKET_CITIES } from './site';
 import { PRODUCTS, getProduct } from './products';
-import { GENERAL_FAQS, DEALER_FAQS, CONTRACT_FAQS, productFaqs } from './faqs';
+import { GENERAL_FAQS, DEALER_FAQS, CONTRACT_FAQS, HUB_FAQS, productFaqs, cityFaqs } from './faqs';
+import { CITIES, CITY_HUB_PATH, getCity } from './cities';
 
 const PAGES = {
   '/': {
-    title: 'Kamal Brand Namkeen | Chanachur, Bhujia & Sev – Raniganj, West Bengal',
+    title: 'Namkeen Manufacturer in West Bengal | Kamal Brand, Raniganj',
     description:
-      'Kamal Brand makes authentic Indian namkeen in Raniganj, West Bengal: Jhal & Mitha Chanachur, Bhujia, Sev, Gathiya, Chana Dal and more. Bulk orders, dealership & private label.',
+      'Kamal Brand is a namkeen manufacturer in West Bengal, making chanachur, bhujia, sev and gathiya in Raniganj and supplying wholesale buyers across Bengal.',
     name: 'Home',
     changefreq: 'weekly',
     priority: '1.0',
@@ -15,19 +16,27 @@ const PAGES = {
   '/products': {
     title: 'Namkeen Products – Chanachur, Bhujia, Sev, Gathiya | Kamal Brand',
     description:
-      'Explore all 10 Kamal Brand namkeen products: Jhal Chanachur, Mitha Chanachur, Bhujia, Sev, Papdi Gathiya, Phool Gathiya, Chana Dal, Fried Chura, Salted Badam and Masala Matar.',
+      'All 10 Kamal Brand namkeen: Jhal & Mitha Chanachur, Bhujia, Sev, Papdi & Phool Gathiya, Chana Dal, Fried Chura, Salted Badam and Masala Matar, with pack sizes.',
     name: 'Our Products',
     changefreq: 'weekly',
     priority: '0.9',
   },
   '/dealership': {
-    title: 'Namkeen Dealership & Distributorship in West Bengal | Kamal Brand',
+    title: 'Namkeen Distributorship in West Bengal | Kamal Brand Dealership',
     description:
-      'Apply for a Kamal Brand namkeen dealership or distributorship. Fast-moving chanachur, bhujia and sev, reliable supply and direct support. Apply online in 2 minutes.',
+      'Apply for a Kamal Brand namkeen distributorship in West Bengal, from Asansol and Durgapur to Kolkata and Siliguri. Fast-moving chanachur, bhujia and sev.',
     name: 'Apply For Dealership',
     changefreq: 'monthly',
     priority: '0.9',
     faqs: DEALER_FAQS,
+  },
+  [CITY_HUB_PATH]: {
+    title: 'Mixture Manufacturer & Distributor in West Bengal | Kamal Brand',
+    description: `Kamal Brand chanachur mixture, made in Raniganj and supplied to ${CITIES.length} West Bengal cities. Find your city for products, routes and distributorship details.`,
+    name: 'Mixture Supply in West Bengal',
+    changefreq: 'monthly',
+    priority: '0.9',
+    faqs: HUB_FAQS,
   },
   '/hampers': {
     title: 'Namkeen Gift Hampers for Diwali, Bijoya & Corporate Gifting | Kamal Brand',
@@ -40,7 +49,7 @@ const PAGES = {
   '/contract': {
     title: 'Namkeen Contract Manufacturing & Private Label | Kamal Brand',
     description:
-      'Private label and third-party namkeen manufacturing in West Bengal: bhujia, sev, gathiya, chanachur, chana dal and more, made to your recipe, pack size and timeline.',
+      'Private label and third-party namkeen manufacturing in West Bengal: bhujia, sev, gathiya, chanachur and more, made to your recipe, pack size and timeline.',
     name: 'Contract Manufacturing',
     changefreq: 'monthly',
     priority: '0.8',
@@ -49,7 +58,7 @@ const PAGES = {
   '/about': {
     title: 'About Kamal Brand – Namkeen Manufacturer in Raniganj, West Bengal',
     description:
-      'Learn about Kamal Brand, a namkeen manufacturer in Raniganj, Paschim Bardhaman. Traditional recipes, premium besan and spices, hygienic processing and sealed packing.',
+      'Kamal Brand is a namkeen manufacturer in Raniganj, Paschim Bardhaman: traditional recipes, premium besan and spices, hygienic processing and sealed packs.',
     name: 'About Us',
     changefreq: 'monthly',
     priority: '0.7',
@@ -57,7 +66,7 @@ const PAGES = {
   '/contact': {
     title: 'Contact Kamal Brand Namkeen – Raniganj | Call +91 99322 59719',
     description:
-      'Contact Kamal Brand for bulk namkeen orders, dealership, gift hampers and contract manufacturing. Call +91 99322 59719 / +91 89007 43299 or email kamalsbrand@gmail.com.',
+      'Contact Kamal Brand for bulk namkeen orders, dealership, gift hampers and contract manufacturing. Call +91 99322 59719 or email kamalsbrand@gmail.com.',
     name: 'Contact',
     changefreq: 'monthly',
     priority: '0.7',
@@ -65,7 +74,7 @@ const PAGES = {
 };
 
 export const STATIC_PATHS = Object.keys(PAGES);
-export const ALL_PATHS = [...STATIC_PATHS, ...PRODUCTS.map((p) => p.path)];
+export const ALL_PATHS = [...STATIC_PATHS, ...PRODUCTS.map((p) => p.path), ...CITIES.map((c) => c.path)];
 
 export function normalizePath(pathname = '/') {
   let p = pathname.split('?')[0].split('#')[0].toLowerCase();
@@ -79,6 +88,8 @@ export function resolveRoute(pathname) {
   if (PAGES[path]) return { key: path, path };
   const m = path.match(/^\/products\/([a-z0-9-]+)$/);
   if (m && getProduct(m[1])) return { key: '/products/:slug', path, product: getProduct(m[1]) };
+  const c = path.startsWith(CITY_HUB_PATH + '/') && getCity(path.slice(CITY_HUB_PATH.length + 1));
+  if (c) return { key: '/city/:slug', path, city: c };
   return { key: '404', path };
 }
 
@@ -99,6 +110,10 @@ const organization = {
     addressRegion: BUSINESS.address.region,
     addressCountry: BUSINESS.address.country,
   },
+  areaServed: [
+    { '@type': 'State', name: 'West Bengal' },
+    ...MARKET_CITIES.map((name) => ({ '@type': 'City', name, containedInPlace: { '@type': 'State', name: 'West Bengal' } })),
+  ],
   contactPoint: BUSINESS.phones.map((ph) => ({
     '@type': 'ContactPoint',
     telephone: ph.tel,
@@ -145,6 +160,13 @@ export function getBreadcrumbs(route) {
       { name: route.product.name, path: route.product.path },
     ];
   }
+  if (route.city) {
+    return [
+      { name: 'Home', path: '/' },
+      { name: PAGES[CITY_HUB_PATH].name, path: CITY_HUB_PATH },
+      { name: route.city.name, path: route.city.path },
+    ];
+  }
   return [
     { name: 'Home', path: '/' },
     { name: PAGES[route.key].name, path: route.key },
@@ -172,11 +194,19 @@ export function getSeo(pathname) {
     const p = route.product;
     meta = {
       title: `${p.name} Namkeen – ${p.sizesText} Packs | Kamal Brand`,
-      description: `Kamal Brand ${p.name}: ${p.taste.toLowerCase()} namkeen made with ${p.ingredients
+      description: `${p.name} by Kamal Brand, made with ${p.ingredients
         .slice(0, 2)
         .map((i) => i.replace(/\s*\(.*\)/, '').toLowerCase())
-        .join(' & ')}. ${p.sizesText} packs. "${p.slogan}". Bulk orders & dealership from Raniganj, West Bengal.`,
+        .join(' & ')} (${p.taste.toLowerCase()}). ${p.sizesText} packs. Wholesale & dealership from Raniganj, West Bengal.`,
       image: abs(p.gallery[0].src),
+    };
+  } else if (route.city) {
+    const c = route.city;
+    const where = c.km === 0 ? 'made right here in Raniganj' : `from Raniganj (${c.km} km)`;
+    meta = {
+      title: `Mixture Manufacturer in ${c.name} | Distributor & Dealership`,
+      description: `Mixture manufacturer for ${c.name}: Kamal Brand chanachur, bhujia, sev & gathiya ${where}. Distributorship & dealership open in ${c.name}.`,
+      image: abs(IMG.og),
     };
   } else {
     meta = { ...PAGES[route.key], image: abs(IMG.og) };
@@ -185,7 +215,7 @@ export function getSeo(pathname) {
   const crumbs = getBreadcrumbs(route);
   if (crumbs.length) graph.push(breadcrumbs(crumbs));
 
-  const faqs = route.product ? productFaqs(route.product) : PAGES[route.key].faqs;
+  const faqs = route.product ? productFaqs(route.product) : route.city ? cityFaqs(route.city) : PAGES[route.key].faqs;
   if (faqs) graph.push(faqPage(faqs));
 
   if (route.key === '/products') {
@@ -198,6 +228,35 @@ export function getSeo(pathname) {
         url: SITE_URL + p.path,
         name: p.name,
       })),
+    });
+  }
+
+  if (route.city) {
+    const c = route.city;
+    graph.push({
+      '@type': 'Service',
+      name: `Mixture manufacturing and wholesale supply in ${c.name}`,
+      serviceType: 'Namkeen mixture manufacturer, distributorship and dealership',
+      provider: { '@id': `${SITE_URL}/#organization` },
+      areaServed: {
+        '@type': 'City',
+        name: c.name,
+        ...(c.alt.length ? { alternateName: c.alt } : {}),
+        containedInPlace: { '@type': 'AdministrativeArea', name: `${c.district} district, West Bengal` },
+      },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Kamal Brand mixture and namkeen',
+        itemListElement: PRODUCTS.map((p) => ({ '@type': 'Product', name: `Kamal Brand ${p.name}`, url: SITE_URL + p.path, image: abs(p.gallery[0].src) })),
+      },
+    });
+  }
+
+  if (route.key === CITY_HUB_PATH) {
+    graph.push({
+      '@type': 'ItemList',
+      name: 'Kamal Brand mixture supply by city',
+      itemListElement: CITIES.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: SITE_URL + c.path, name: `Mixture Manufacturer in ${c.name}` })),
     });
   }
 
@@ -238,6 +297,14 @@ export function sitemapEntries() {
       changefreq: 'monthly',
       priority: '0.8',
       images: p.gallery.map((g) => abs(g.src)),
+    }),
+  );
+  CITIES.forEach((c) =>
+    entries.push({
+      loc: SITE_URL + c.path,
+      changefreq: 'monthly',
+      priority: '0.8',
+      images: [],
     }),
   );
   return entries;

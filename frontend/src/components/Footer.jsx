@@ -4,6 +4,7 @@ import ContactBanner from './ContactBanner';
 import { Link } from '../router';
 import { BUSINESS, IMG, NAV_ITEMS } from '../data/site';
 import { PRODUCTS } from '../data/products';
+import { CITY_HUB_PATH } from '../data/cities';
 
 export default function Footer() {
   return (
@@ -39,6 +40,11 @@ export default function Footer() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link to={CITY_HUB_PATH} className="inline-flex items-center gap-1.5 py-1 hover:text-amber-300 transition-colors">
+                <span className="text-amber-500" aria-hidden="true">›</span> Mixture Supply by City
+              </Link>
+            </li>
           </ul>
         </nav>
 

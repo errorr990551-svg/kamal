@@ -8,6 +8,7 @@ import { FaqSection, PageHeader } from '../components/Common';
 import { DEALER_FAQS } from '../data/faqs';
 import { PRODUCTS } from '../data/products';
 import { BUSINESS } from '../data/site';
+import MarketAreas from '../components/MarketAreas';
 
 const EMPTY = { name: '', agencyName: '', address: '', state: '', phone: '', email: '', maxQuantity: '', specifiedProduct: '' };
 
@@ -68,10 +69,10 @@ export default function DealershipPage() {
     <div className="space-y-10 animate-fadeIn pb-8">
       <div className="max-w-7xl mx-auto px-4 space-y-10 pt-2">
         <PageHeader
-          eyebrow="Official Business Partnership"
+          eyebrow="Namkeen Distributorship in West Bengal"
           icon={Building2}
           title="Apply For Kamal Brand Namkeen Dealership"
-          intro="Become an authorised dealer, distributor or stockist of Kamal Brand namkeen. We are a manufacturer in Raniganj, West Bengal, looking for committed partners to take our chanachur, bhujia, sev and gathiya to more shops across West Bengal and neighbouring states."
+          intro="Become an authorised dealer, distributor or stockist of Kamal Brand namkeen. We are a manufacturer in Raniganj, West Bengal, looking for committed partners to take our chanachur, bhujia, sev and gathiya to more shops in Asansol, Durgapur, Bardhaman, Kolkata, Siliguri and every district of West Bengal, as well as neighbouring states."
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -193,6 +194,8 @@ export default function DealershipPage() {
             </p>
           </div>
         </section>
+
+        <MarketAreas variant="distributor" />
 
         <FaqSection faqs={DEALER_FAQS} title="Dealership FAQs" />
       </div>

@@ -37,3 +37,38 @@ export const NAV_ITEMS = [
   { path: '/about', label: 'About Us' },
   { path: '/contact', label: 'Contact' },
 ];
+
+// The two keywords the site targets for now (see SEO-PLAN.md). Each is used with
+// "West Bengal" and with the city names below ("namkeen manufacturer in Asansol").
+export const TARGET_KEYWORDS = {
+  manufacturer: 'namkeen manufacturer in West Bengal',
+  distributor: 'namkeen distributorship in West Bengal',
+};
+
+// Market areas: West Bengal cities we take bulk orders and dealer enquiries from,
+// grouped by region, nearest first. Edit this list and the home page, dealership
+// page and structured data (areaServed) all update.
+export const MARKET_AREAS = [
+  {
+    region: 'Paschim Bardhaman (home district)',
+    note: 'Closest to our Raniganj factory',
+    cities: ['Raniganj', 'Asansol', 'Durgapur', 'Jamuria', 'Andal', 'Kulti', 'Barakar', 'Burnpur', 'Pandabeswar', 'Panagarh'],
+  },
+  {
+    region: 'Purba Bardhaman, Birbhum, Bankura & Purulia',
+    note: 'Neighbouring districts',
+    cities: ['Bardhaman', 'Memari', 'Katwa', 'Kalna', 'Bolpur', 'Suri', 'Rampurhat', 'Bankura', 'Bishnupur', 'Purulia', 'Raghunathpur'],
+  },
+  {
+    region: 'Kolkata & South Bengal',
+    note: 'Kolkata, Howrah, Hooghly, North 24 Parganas, Nadia & Medinipur',
+    cities: ['Kolkata', 'Howrah', 'Barasat', 'Barrackpore', 'Serampore', 'Chinsurah', 'Chandannagar', 'Krishnanagar', 'Kalyani', 'Medinipur', 'Kharagpur', 'Haldia', 'Tamluk'],
+  },
+  {
+    region: 'Central & North Bengal',
+    note: 'Murshidabad, Malda, Dinajpur, Darjeeling, Jalpaiguri & Cooch Behar',
+    cities: ['Berhampore', 'Malda', 'Raiganj', 'Balurghat', 'Siliguri', 'Jalpaiguri', 'Cooch Behar'],
+  },
+];
+
+export const MARKET_CITIES = MARKET_AREAS.flatMap((a) => a.cities);

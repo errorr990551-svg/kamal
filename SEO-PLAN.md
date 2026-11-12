@@ -20,7 +20,7 @@ Keyword ideas come from what buyers and competitors in West Bengal actually list
 
 | Page | Primary keywords | Supporting keywords |
 |---|---|---|
-| `/` Home | Kamal Brand namkeen, namkeen manufacturer Raniganj | namkeen manufacturer West Bengal, Paschim Bardhaman, Asansol, Durgapur, chanachur bhujia sev |
+| `/` Home | **namkeen manufacturer in West Bengal** | Kamal Brand namkeen, namkeen manufacturer Raniganj, Paschim Bardhaman, chanachur bhujia sev |
 | `/products` | namkeen products, chanachur bhujia sev | gathiya, chana dal namkeen, masala matar, fried chura |
 | `/products/jhal-chanachur` | jhal chanachur | spicy chanachur, chanachur 400g, jhal muri chanachur |
 | `/products/mitha-chanachur` | mitha chanachur | sweet chanachur, meetha chanachur |
@@ -32,12 +32,77 @@ Keyword ideas come from what buyers and competitors in West Bengal actually list
 | `/products/fried-chura` | fried chura | chire bhaja, poha chivda |
 | `/products/salted-peanuts` | salted badam | salted peanuts, lal badam |
 | `/products/masala-matar` | masala matar | masala green peas, fried green peas |
-| `/dealership` | namkeen dealership West Bengal | namkeen distributorship, namkeen distributor, chanachur distributorship |
+| `/dealership` | **namkeen distributorship in West Bengal** | namkeen dealership West Bengal, namkeen distributor, chanachur distributorship |
+| `/mixture-manufacturer-distributor` | mixture manufacturer in West Bengal | mixture distributor West Bengal, chanachur supplier West Bengal |
 | `/contract` | namkeen contract manufacturing | private label namkeen, third party namkeen manufacturer |
 | `/hampers` | namkeen gift hamper | Diwali namkeen gift box, Bijoya gift, corporate gift hamper |
 | `/contact` | Kamal Brand contact | namkeen wholesale Raniganj |
 
 Note: "Bikaneri Bhujia" was removed from the site. *Bikaneri Bhujia* is a GI-tagged product of Bikaner, and the Kamal Brand catalogue describes a besan bhujia, so using that name could be misleading.
+
+## 2a. City pages: "mixture manufacturer / distributor / dealership in {city}"
+
+There are 20 city pages plus one hub page that links to all of them. Each city page targets three searches:
+
+- **mixture manufacturer in {city}**: used in the H1, the title and the opening paragraph.
+- **mixture distributor in {city}**: used in the "Become a Mixture Distributor in {city}" section and the FAQs.
+- **mixture dealership in {city}**: used in the subtitle, the dealership button, the "3 steps" block and the FAQs.
+
+All 10 products are shown on every page. Each page also picks out the 3 to 4 products that suit that city's buyers.
+
+| City | URL |
+|---|---|
+| Hub (all cities) | `/mixture-manufacturer-distributor` |
+| Raniganj | `/mixture-manufacturer-distributor/raniganj` |
+| Asansol | `/mixture-manufacturer-distributor/asansol` |
+| Durgapur | `/mixture-manufacturer-distributor/durgapur` |
+| Bardhaman (Burdwan) | `/mixture-manufacturer-distributor/bardhaman` |
+| Bolpur (Santiniketan) | `/mixture-manufacturer-distributor/bolpur` |
+| Suri | `/mixture-manufacturer-distributor/suri` |
+| Bankura | `/mixture-manufacturer-distributor/bankura` |
+| Purulia | `/mixture-manufacturer-distributor/purulia` |
+| Kolkata | `/mixture-manufacturer-distributor/kolkata` |
+| Howrah | `/mixture-manufacturer-distributor/howrah` |
+| Barasat | `/mixture-manufacturer-distributor/barasat` |
+| Krishnanagar | `/mixture-manufacturer-distributor/krishnanagar` |
+| Kharagpur | `/mixture-manufacturer-distributor/kharagpur` |
+| Medinipur (Midnapore) | `/mixture-manufacturer-distributor/medinipur` |
+| Haldia | `/mixture-manufacturer-distributor/haldia` |
+| Berhampore (Baharampur) | `/mixture-manufacturer-distributor/berhampore` |
+| Malda (English Bazar) | `/mixture-manufacturer-distributor/malda` |
+| Siliguri | `/mixture-manufacturer-distributor/siliguri` |
+| Jalpaiguri | `/mixture-manufacturer-distributor/jalpaiguri` |
+| Cooch Behar | `/mixture-manufacturer-distributor/cooch-behar` |
+
+**Why these are not "doorway pages"** (the thing Google penalises in city pages). Every page has content written for that city:
+
+- The local market: who buys mixture there and where.
+- The buyer types in that city.
+- The festival and season calendar for that city.
+- The road route from Raniganj and an approximate distance.
+- The 6 surrounding towns a local distributor could cover.
+- The products that suit that city's buyers.
+- 2 FAQs specific to that city.
+- Links to the 4 nearest cities.
+
+Each page has 940 to 1,080 words of main content. Text overlap between any two city pages averages 35%, with a maximum of 43%. The pages make no promises about delivery days, minimum orders or prices; buyers are asked to call.
+
+**All city facts live in one file:** `frontend/src/data/cities.js`. Please check the following there:
+
+- The **road distances**. They are approximate and shown on the pages as "about".
+- The routes, the nearby towns and the local details.
+- That you really do supply, or are willing to supply, every listed city.
+
+Correct anything that is wrong; wrong local facts hurt trust.
+
+**To add a city:** copy one entry in `cities.js` and rewrite *all* of its text for the new city. Do not just change the name, because near-duplicate pages can get all city pages demoted. The URL, sitemap, schema, hub link and nearby-city links are created automatically.
+
+**After deploying:**
+
+- In Search Console, resubmit `sitemap.xml` (it now lists the hub page and the 20 city URLs).
+- Request indexing for the hub page and the 3 to 5 most important cities.
+- On the Google Business Profile, set the service areas to these cities.
+- Link IndiaMART and JustDial listings to the hub page.
 
 ## 3. Promotion steps that need your accounts (do these first)
 
