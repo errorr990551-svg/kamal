@@ -6,11 +6,16 @@ on:
       - main
   workflow_dispatch:
 
+# Never run two deploys at once; a newer push waits for the running one.
+concurrency:
+  group: hostinger-deploy
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     name: Build & Fast Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: 📥 Checkout Repository
@@ -44,14 +49,14 @@ jobs:
           echo "deploy.zip created successfully:"
           ls -lh deploy.zip
 
-      - name: 🚀 Install FTP Helper & Execute Fast ZIP Deploy
+      - name: 🚀 Upload to Hostinger, unzip and check the live site
+        timeout-minutes: 12
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          LIVE_DOMAIN: ${{ secrets.LIVE_DOMAIN }}
-          HOSTINGER_DOMAIN: ${{ secrets.HOSTINGER_DOMAIN }}
+          DEPLOY_SECRET: ${{ secrets.DEPLOY_SECRET }}
         run: |
-          npm install --no-save basic-ftp
+          npm install --no-save --no-package-lock basic-ftp@6.2.6
           node .github/scripts/deploy.cjs
 
